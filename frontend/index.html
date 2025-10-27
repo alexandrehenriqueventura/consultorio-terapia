@@ -27,7 +27,7 @@
     .tab-btn:hover{border-color:var(--primary); box-shadow:0 0 0 2px rgba(34,197,94,.15) inset}
     .tab-btn.active{background:linear-gradient(180deg,#0f1a30, #0b1323); border-color:var(--primary); color:#ecfeff}
     /* Layout */
-    .main{padding:24px 0}
+    main{padding:24px 0}
     .grid{display:grid; gap:16px}
     .cards{grid-template-columns: repeat(12, 1fr)}
     .card{grid-column: span 12; background:linear-gradient(180deg,#0b1220,#0e1527); border:1px solid var(--ring); border-radius:14px; padding:16px}
@@ -65,80 +65,177 @@
   <header class="header">
     <div class="container header-inner">
       <div class="logo">
-        <i class="fa-solid fa-brain fa-lg"></i>
+        <i class="fa-solid fa-leaf"></i>
         <h1>Consultório Terapia</h1>
       </div>
-      <nav class="nav-menu" aria-label="Navegação por abas">
-        <button class="tab-btn active" data-tab="dashboard"><i class="fa-solid fa-house"></i> Dashboard</button>
-        <button class="tab-btn" data-tab="pacientes"><i class="fa-solid fa-user-group"></i> Pacientes</button>
-        <button class="tab-btn" data-tab="agenda"><i class="fa-solid fa-calendar-days"></i> Agenda</button>
-        <button class="tab-btn" data-tab="financeiro"><i class="fa-solid fa-sack-dollar"></i> Financeiro</button>
-        <button class="tab-btn" data-tab="login"><i class="fa-solid fa-right-to-bracket"></i> Login</button>
+      <nav class="nav-menu" aria-label="Navegação">
+        <button class="tab-btn active" data-tab="dashboard" id="tab-dashboard"><i class="fa-solid fa-gauge"></i>Dashboard</button>
+        <button class="tab-btn" data-tab="paciente" id="tab-paciente"><i class="fa-solid fa-user"></i>Paciente</button>
+        <button class="tab-btn" data-tab="agenda" id="tab-agenda"><i class="fa-solid fa-calendar"></i>Agenda</button>
+        <button class="tab-btn" data-tab="login" id="tab-login"><i class="fa-solid fa-right-to-bracket"></i>Login</button>
+        <button class="tab-btn" data-tab="financeiro" id="tab-financeiro"><i class="fa-solid fa-wallet"></i>Financeiro</button>
       </nav>
     </div>
   </header>
 
-  <main class="main container">
+  <main class="container">
     <section id="dashboard" class="section active" aria-labelledby="tab-dashboard">
       <div class="grid cards">
-        <div class="card"><div class="row" style="align-items:center; gap:12px"><div class="icon"><i class="fa-solid fa-users"></i></div><div>Total de Pacientes<div id="kpiPacientes" class="metric">0</div></div></div></div>
-        <div class="card"><div class="row" style="align-items:center; gap:12px"><div class="icon"><i class="fa-solid fa-calendar-check"></i></div><div>Consultas Hoje<div id="kpiHoje" class="metric">0</div></div></div></div>
-        <div class="card"><div class="row" style="align-items:center; gap:12px"><div class="icon"><i class="fa-solid fa-clock"></i></div><div>Próximas 7 dias<div id="kpiSemana" class="metric">0</div></div></div></div>
-        <div class="card"><div class="row" style="align-items:center; gap:12px"><div class="icon" style="background:rgba(59,130,246,.08); color:#60a5fa; border-color:rgba(59,130,246,.25)"><i class="fa-solid fa-signal"></i></div><div>Taxa de Comparecimento<div id="kpiComparecimento" class="metric">0%</div></div></div></div>
-      </div>
-      <div class="grid" style="margin-top:16px">
-        <div class="card" style="grid-column: span 12">
-          <h3>Hoje</h3>
-          <table class="table" aria-label="Consultas de hoje">
-            <thead><tr><th>Hora</th><th>Paciente</th><th>Tipo</th><th>Status</th></tr></thead>
-            <tbody id="tabelaHoje"><tr><td colspan="4" style="color:var(--muted)">Nenhuma consulta hoje</td></tr></tbody>
-          </table>
+        <div class="card">
+          <div class="icon"><i class="fa-solid fa-users"></i></div>
+          <h3>Pacientes</h3>
+          <div id="vPacientes" class="metric">0</div>
+        </div>
+        <div class="card">
+          <div class="icon"><i class="fa-solid fa-calendar-check"></i></div>
+          <h3>Consultas hoje</h3>
+          <div id="vConsultasHoje" class="metric">0</div>
+        </div>
+        <div class="card">
+          <div class="icon"><i class="fa-solid fa-circle-check"></i></div>
+          <h3>Comparecimento</h3>
+          <div id="vComparecimento" class="metric">0%</div>
+        </div>
+        <div class="card">
+          <div class="icon"><i class="fa-solid fa-wallet"></i></div>
+          <h3>Receita (mês)</h3>
+          <div id="vReceitas" class="metric">R$ 0,00</div>
         </div>
       </div>
     </section>
 
-    <section id="pacientes" class="section" aria-labelledby="tab-pacientes">
-      <div class="card" style="margin-bottom:12px">
-        <div class="row">
-          <div class="field"><label for="buscaPaciente">Buscar</label><input id="buscaPaciente" class="input" placeholder="Nome, email ou telefone" /></div>
-          <div class="field" style="max-width:200px"><label for="filtroStatus">Status</label><select id="filtroStatus" class="select"><option value="">Todos</option><option value="ativo">Ativo</option><option value="inativo">Inativo</option></select></div>
-          <div class="field" style="flex:0 0 auto; align-self:flex-end"><button id="btnNovoPaciente" class="btn primary"><i class="fa-solid fa-user-plus"></i> Novo</button></div>
-        </div>
-      </div>
+    <section id="paciente" class="section" aria-labelledby="tab-paciente">
       <div class="card">
-        <table class="table" aria-label="Lista de pacientes">
-          <thead><tr><th>Nome</th><th>Contato</th><th>Status</th><th style="width:110px">Ações</th></tr></thead>
-          <tbody id="listaPacientes"><tr><td colspan="4" style="color:var(--muted)">Nenhum paciente cadastrado</td></tr></tbody>
+        <h3>Cadastro de Paciente</h3>
+        <form id="form-paciente">
+          <div class="row">
+            <div class="field">
+              <label for="paciente-nome">Nome completo</label>
+              <input id="paciente-nome" name="nome" class="input" type="text" required />
+            </div>
+            <div class="field">
+              <label for="paciente-email">E-mail</label>
+              <input id="paciente-email" name="email" class="input" type="email" />
+            </div>
+            <div class="field">
+              <label for="paciente-telefone">Telefone</label>
+              <input id="paciente-telefone" name="telefone" class="input" type="tel" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label for="paciente-nascimento">Data de nascimento</label>
+              <input id="paciente-nascimento" name="nascimento" class="input" type="date" />
+            </div>
+            <div class="field">
+              <label for="paciente-notas">Notas</label>
+              <textarea id="paciente-notas" name="notas" class="textarea"></textarea>
+            </div>
+          </div>
+          <div class="row" style="justify-content:flex-end">
+            <button type="submit" class="btn primary"><i class="fa-solid fa-floppy-disk"></i> Salvar</button>
+            <button type="reset" class="btn warn"><i class="fa-solid fa-eraser"></i> Limpar</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h3>Pacientes cadastrados</h3>
+        <table class="table" aria-label="Pacientes">
+          <thead><tr><th>Nome</th><th>E-mail</th><th>Telefone</th></tr></thead>
+          <tbody id="listaPacientes"><tr><td colspan="3" style="color:var(--muted)">Sem registros</td></tr></tbody>
         </table>
       </div>
     </section>
 
     <section id="agenda" class="section" aria-labelledby="tab-agenda">
-      <div class="card" style="margin-bottom:12px">
-        <div class="row">
-          <div class="field"><label for="dataAgenda">Data</label><input id="dataAgenda" class="input" type="date" /></div>
-          <div class="field"><label for="pacienteAgenda">Paciente</label><input id="pacienteAgenda" class="input" placeholder="Nome do paciente" /></div>
-          <div class="field"><label for="tipoSessao">Tipo</label><select id="tipoSessao" class="select"><option>Avaliação</option><option>Psicoterapia</option><option>Retorno</option><option>Online</option></select></div>
-          <div class="field"><label for="horaSessao">Hora</label><input id="horaSessao" class="input" type="time" /></div>
-          <div class="field" style="flex:0 0 auto; align-self:flex-end"><button id="btnAgendar" class="btn primary"><i class="fa-solid fa-calendar-plus"></i> Agendar</button></div>
-        </div>
-      </div>
       <div class="card">
+        <h3>Agendar consulta</h3>
+        <form id="form-agenda">
+          <div class="row">
+            <div class="field">
+              <label for="agenda-paciente">Paciente</label>
+              <input id="agenda-paciente" name="paciente" class="input" type="text" required />
+            </div>
+            <div class="field">
+              <label for="agenda-data">Data</label>
+              <input id="agenda-data" name="data" class="input" type="date" required />
+            </div>
+            <div class="field">
+              <label for="agenda-hora">Hora</label>
+              <input id="agenda-hora" name="hora" class="input" type="time" required />
+            </div>
+            <div class="field">
+              <label for="agenda-tipo">Tipo</label>
+              <select id="agenda-tipo" name="tipo" class="select">
+                <option value="consulta">Consulta</option>
+                <option value="retorno">Retorno</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label for="agenda-observacoes">Observações</label>
+              <textarea id="agenda-observacoes" name="observacoes" class="textarea"></textarea>
+            </div>
+          </div>
+          <div class="row" style="justify-content:flex-end">
+            <button type="submit" class="btn primary"><i class="fa-solid fa-calendar-plus"></i> Agendar</button>
+            <button type="reset" class="btn warn"><i class="fa-solid fa-eraser"></i> Limpar</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card" style="margin-top:16px">
         <h3>Próximas consultas</h3>
-        <table class="table" aria-label="Próximas consultas">
-          <thead><tr><th>Data</th><th>Hora</th><th>Paciente</th><th>Tipo</th><th>Status</th><th style="width:140px">Ações</th></tr></thead>
-          <tbody id="listaAgenda"><tr><td colspan="6" style="color:var(--muted)">Nenhuma consulta agendada</td></tr></tbody>
+        <table class="table" aria-label="Agenda">
+          <thead><tr><th>Data</th><th>Hora</th><th>Paciente</th><th>Tipo</th></tr></thead>
+          <tbody id="listaAgenda"><tr><td colspan="4" style="color:var(--muted)">Sem agendamentos</td></tr></tbody>
         </table>
+      </div>
+    </section>
+
+    <section id="login" class="section" aria-labelledby="tab-login">
+      <div class="card">
+        <h3>Acesso</h3>
+        <form id="form-login">
+          <div class="row">
+            <div class="field">
+              <label for="login-email">E-mail</label>
+              <input id="login-email" name="email" class="input" type="email" placeholder="seu@email.com" required />
+            </div>
+            <div class="field">
+              <label for="login-senha">Senha</label>
+              <input id="login-senha" name="senha" class="input" type="password" placeholder="••••••" required />
+            </div>
+          </div>
+          <div class="row" style="justify-content:flex-end">
+            <button type="submit" class="btn primary"><i class="fa-solid fa-right-to-bracket"></i> Entrar</button>
+          </div>
+        </form>
       </div>
     </section>
 
     <section id="financeiro" class="section" aria-labelledby="tab-financeiro">
       <div class="grid cards">
-        <div class="card">Receitas (mês)<div id="vReceitas" class="metric">R$ 0,00</div></div>
-        <div class="card">Despesas (mês)<div id="vDespesas" class="metric">R$ 0,00</div></div>
-        <div class="card">Saldo<div id="vSaldo" class="metric">R$ 0,00</div></div>
-        <div class="card">Taxa de Adimplência<div id="vAdimplencia" class="metric">0%</div></div>
+        <div class="card">
+          <h3>Receitas (mês)</h3>
+          <div id="vReceitasMes" class="metric">R$ 0,00</div>
+        </div>
+        <div class="card">
+          <h3>Despesas (mês)</h3>
+          <div id="vDespesas" class="metric">R$ 0,00</div>
+        </div>
+        <div class="card">
+          <h3>Saldo</h3>
+          <div id="vSaldo" class="metric">R$ 0,00</div>
+        </div>
+        <div class="card">
+          <h3>Taxa de Adimplência</h3>
+          <div id="vAdimplencia" class="metric">0%</div>
+        </div>
       </div>
+
       <div class="card" style="margin-top:16px">
         <h3>Movimentações recentes</h3>
         <table class="table" aria-label="Movimentações">
@@ -147,50 +244,14 @@
         </table>
       </div>
     </section>
-
-    <section id="login" class="section" aria-labelledby="tab-login">
-      <div class="card">
-        <h3>Acesso</h3>
-        <div class="row">
-          <div class="field"><label for="email">E-mail</label><input id="email" class="input" type="email" placeholder="seu@email.com" /></div>
-          <div class="field"><label for="senha">Senha</label><input id="senha" class="input" type="password" placeholder="••••••" /></div>
-          <div class="field" style="flex:0 0 auto; align-self:flex-end"><button class="btn primary"><i class="fa-solid fa-right-to-bracket"></i> Entrar</button></div>
-        </div>
-      </div>
-    </section>
   </main>
 
-  <script>
-    // Tabs: alterna seção ativa e estado dos botões
-    document.addEventListener('DOMContentLoaded', () => {
-      const buttons = Array.from(document.querySelectorAll('.tab-btn'));
-      const sections = Array.from(document.querySelectorAll('.section'));
+  <div id="message-container" aria-live="polite"></div>
 
-      function activate(tabId){
-        sections.forEach(sec => sec.classList.toggle('active', sec.id === tabId));
-        buttons.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tabId));
-        // Atualiza hash para permitir navegação direta e histórico
-        if (location.hash !== '#' + tabId) {
-          history.replaceState(null, '', '#' + tabId);
-        }
-      }
+  <footer>
+    <div class="container">© Consultório Terapia</div>
+  </footer>
 
-      // Clique nos botões
-      buttons.forEach(btn => {
-        btn.addEventListener('click', () => activate(btn.dataset.tab));
-      });
-
-      // Suporte a hash inicial (ex.: #agenda)
-      const initial = (location.hash || '#dashboard').replace('#','');
-      const validInitial = sections.some(s => s.id === initial) ? initial : 'dashboard';
-      activate(validInitial);
-
-      // Acompanha mudanças manuais no hash (ex.: voltar/avançar)
-      window.addEventListener('hashchange', () => {
-        const h = (location.hash || '#dashboard').replace('#','');
-        if (sections.some(s => s.id === h)) activate(h);
-      });
-    });
-  </script>
+  <script src="js/script.js"></script>
 </body>
 </html>
