@@ -9,41 +9,23 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/2.0.0/modern-normalize.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <style>
-    :root{
-      --bg:#0f172a; /* slate-900 */
-      --panel:#111827; /* gray-900 */
-      --muted:#94a3b8; /* slate-400 */
-      --text:#e5e7eb; /* gray-200 */
-      --primary:#22c55e; /* green-500 */
-      --primary-600:#16a34a; /* green-600 */
-      --ring:#334155; /* slate-700 */
-      --card:#0b1220; /* dark */
-      --danger:#ef4444;
-      --warning:#f59e0b;
-      --ok:#22c55e;
-    }
+    :root{ --bg:#0f172a; --panel:#111827; --muted:#94a3b8; --text:#e5e7eb; --primary:#22c55e; --primary-600:#16a34a; --ring:#334155; --card:#0b1220; --danger:#ef4444; --warning:#f59e0b; --ok:#22c55e; }
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{
-      margin:0; background:linear-gradient(180deg,#0b1220 0%, #0f172a 100%);
-      color:var(--text); font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
-    }
+    body{ margin:0; background:linear-gradient(180deg,#0b1220 0%, #0f172a 100%); color:var(--text); font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; }
     a{color:inherit; text-decoration:none}
     .container{max-width:1100px; margin:0 auto; padding:0 16px}
-
     /* Header */
     .header{position:sticky; top:0; z-index:20; backdrop-filter:saturate(1.2) blur(6px); background:rgba(2,6,23,.6); border-bottom:1px solid var(--ring)}
     .header-inner{display:flex; align-items:center; justify-content:space-between; padding:14px 0}
     .logo{display:flex; align-items:center; gap:10px}
     .logo i{color:var(--primary)}
     .logo h1{font-size:18px; letter-spacing:.3px; margin:0}
-
     /* Tabs nav */
     .nav-menu{display:flex; gap:8px; flex-wrap:wrap}
     .tab-btn{appearance:none; border:1px solid var(--ring); background:#0b1323; color:var(--text); padding:10px 12px; border-radius:10px; display:flex; align-items:center; gap:8px; cursor:pointer; transition:.2s ease}
     .tab-btn:hover{border-color:var(--primary); box-shadow:0 0 0 2px rgba(34,197,94,.15) inset}
     .tab-btn.active{background:linear-gradient(180deg,#0f1a30, #0b1323); border-color:var(--primary); color:#ecfeff}
-
     /* Layout */
     .main{padding:24px 0}
     .grid{display:grid; gap:16px}
@@ -52,19 +34,16 @@
     .card h3{margin:4px 0 8px; font-size:14px; color:var(--muted); font-weight:600}
     .metric{font-size:28px; font-weight:700}
     .card .icon{width:40px; height:40px; display:grid; place-items:center; border-radius:10px; background:rgba(34,197,94,.08); color:var(--primary); border:1px solid rgba(34,197,94,.25)}
-
     /* Sections */
     .section{display:none; animation:fade .25s ease}
     .section.active{display:block}
     @keyframes fade{from{opacity:.6; transform:translateY(4px)} to{opacity:1; transform:none}}
-
     /* Tables */
     .table{width:100%; border-collapse:collapse; overflow:hidden; border-radius:12px; border:1px solid var(--ring)}
     .table th,.table td{padding:12px 10px; text-align:left}
     .table thead th{background:#0c1426; color:#cbd5e1; font-size:12px; letter-spacing:.4px; text-transform:uppercase}
     .table tbody tr{border-top:1px solid var(--ring)}
     .table tbody tr:hover{background:#0c1322}
-
     /* Forms */
     .row{display:flex; gap:12px; flex-wrap:wrap}
     .field{flex:1 1 220px; display:flex; flex-direction:column; gap:6px}
@@ -75,17 +54,11 @@
     .btn.primary:hover{box-shadow:0 0 0 2px rgba(34,197,94,.15) inset}
     .btn.warn{border-color:var(--warning); color:#fde68a}
     .btn.danger{border-color:var(--danger); color:#fecaca}
-
     /* Footer */
     footer{margin:36px 0 10px; color:var(--muted); font-size:12px; text-align:center}
-
     /* Responsive */
-    @media (min-width:640px){
-      .card{grid-column: span 6}
-    }
-    @media (min-width:960px){
-      .card{grid-column: span 3}
-    }
+    @media (min-width:640px){ .card{grid-column: span 6} }
+    @media (min-width:960px){ .card{grid-column: span 3} }
   </style>
 </head>
 <body>
@@ -106,193 +79,118 @@
   </header>
 
   <main class="main container">
-    <!-- Dashboard -->
     <section id="dashboard" class="section active" aria-labelledby="tab-dashboard">
       <div class="grid cards">
-        <div class="card">
-          <div class="row" style="align-items:center; gap:12px">
-            <div class="icon"><i class="fa-solid fa-users"></i></div>
-            <div>
-              <h3>Total de Pacientes</h3>
-              <div class="metric" id="kpiPacientes">0</div>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="row" style="align-items:center; gap:12px">
-            <div class="icon"><i class="fa-solid fa-calendar-check"></i></div>
-            <div>
-              <h3>Consultas Hoje</h3>
-              <div class="metric" id="kpiHoje">0</div>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="row" style="align-items:center; gap:12px">
-            <div class="icon"><i class="fa-solid fa-clock"></i></div>
-            <div>
-              <h3>Próximas 7 dias</h3>
-              <div class="metric" id="kpiSemana">0</div>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="row" style="align-items:center; gap:12px">
-            <div class="icon" style="background:rgba(59,130,246,.08); color:#60a5fa; border-color:rgba(59,130,246,.25)"><i class="fa-solid fa-signal"></i></div>
-            <div>
-              <h3>Taxa de Comparecimento</h3>
-              <div class="metric" id="kpiComparecimento">0%</div>
-            </div>
-          </div>
-        </div>
+        <div class="card"><div class="row" style="align-items:center; gap:12px"><div class="icon"><i class="fa-solid fa-users"></i></div><div>Total de Pacientes<div id="kpiPacientes" class="metric">0</div></div></div></div>
+        <div class="card"><div class="row" style="align-items:center; gap:12px"><div class="icon"><i class="fa-solid fa-calendar-check"></i></div><div>Consultas Hoje<div id="kpiHoje" class="metric">0</div></div></div></div>
+        <div class="card"><div class="row" style="align-items:center; gap:12px"><div class="icon"><i class="fa-solid fa-clock"></i></div><div>Próximas 7 dias<div id="kpiSemana" class="metric">0</div></div></div></div>
+        <div class="card"><div class="row" style="align-items:center; gap:12px"><div class="icon" style="background:rgba(59,130,246,.08); color:#60a5fa; border-color:rgba(59,130,246,.25)"><i class="fa-solid fa-signal"></i></div><div>Taxa de Comparecimento<div id="kpiComparecimento" class="metric">0%</div></div></div></div>
       </div>
-
       <div class="grid" style="margin-top:16px">
         <div class="card" style="grid-column: span 12">
           <h3>Hoje</h3>
           <table class="table" aria-label="Consultas de hoje">
-            <thead>
-              <tr>
-                <th>Hora</th>
-                <th>Paciente</th>
-                <th>Tipo</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="tabelaHoje">
-              <tr><td colspan="4" style="color:var(--muted)">Nenhuma consulta hoje</td></tr>
-            </tbody>
+            <thead><tr><th>Hora</th><th>Paciente</th><th>Tipo</th><th>Status</th></tr></thead>
+            <tbody id="tabelaHoje"><tr><td colspan="4" style="color:var(--muted)">Nenhuma consulta hoje</td></tr></tbody>
           </table>
         </div>
       </div>
     </section>
 
-    <!-- Pacientes -->
     <section id="pacientes" class="section" aria-labelledby="tab-pacientes">
       <div class="card" style="margin-bottom:12px">
         <div class="row">
-          <div class="field">
-            <label for="buscaPaciente">Buscar</label>
-            <input id="buscaPaciente" class="input" placeholder="Nome, email ou telefone" />
-          </div>
-          <div class="field" style="max-width:200px">
-            <label for="filtroStatus">Status</label>
-            <select id="filtroStatus" class="select">
-              <option value="">Todos</option>
-              <option value="ativo">Ativo</option>
-              <option value="inativo">Inativo</option>
-            </select>
-          </div>
-          <div class="field" style="flex:0 0 auto; align-self:flex-end">
-            <button id="btnNovoPaciente" class="btn primary"><i class="fa-solid fa-user-plus"></i> Novo</button>
-          </div>
+          <div class="field"><label for="buscaPaciente">Buscar</label><input id="buscaPaciente" class="input" placeholder="Nome, email ou telefone" /></div>
+          <div class="field" style="max-width:200px"><label for="filtroStatus">Status</label><select id="filtroStatus" class="select"><option value="">Todos</option><option value="ativo">Ativo</option><option value="inativo">Inativo</option></select></div>
+          <div class="field" style="flex:0 0 auto; align-self:flex-end"><button id="btnNovoPaciente" class="btn primary"><i class="fa-solid fa-user-plus"></i> Novo</button></div>
         </div>
       </div>
-
       <div class="card">
         <table class="table" aria-label="Lista de pacientes">
-          <thead>
-            <tr>
-              <th>Nome</th>
-              <th>Contato</th>
-              <th>Status</th>
-              <th style="width:110px">Ações</th>
-            </tr>
-          </thead>
-          <tbody id="listaPacientes">
-            <tr><td colspan="4" style="color:var(--muted)">Nenhum paciente cadastrado</td></tr>
-          </tbody>
+          <thead><tr><th>Nome</th><th>Contato</th><th>Status</th><th style="width:110px">Ações</th></tr></thead>
+          <tbody id="listaPacientes"><tr><td colspan="4" style="color:var(--muted)">Nenhum paciente cadastrado</td></tr></tbody>
         </table>
       </div>
     </section>
 
-    <!-- Agenda -->
     <section id="agenda" class="section" aria-labelledby="tab-agenda">
       <div class="card" style="margin-bottom:12px">
         <div class="row">
-          <div class="field">
-            <label for="dataAgenda">Data</label>
-            <input id="dataAgenda" type="date" class="input" />
-          </div>
-          <div class="field">
-            <label for="pacienteAgenda">Paciente</label>
-            <input id="pacienteAgenda" class="input" placeholder="Nome do paciente" />
-          </div>
-          <div class="field">
-            <label for="tipoSessao">Tipo</label>
-            <select id="tipoSessao" class="select">
-              <option>Avaliação</option>
-              <option>Psicoterapia</option>
-              <option>Retorno</option>
-              <option>Online</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="horaSessao">Hora</label>
-            <input id="horaSessao" type="time" class="input" />
-          </div>
-          <div class="field" style="flex:0 0 auto; align-self:flex-end">
-            <button id="btnAgendar" class="btn primary"><i class="fa-solid fa-calendar-plus"></i> Agendar</button>
-          </div>
+          <div class="field"><label for="dataAgenda">Data</label><input id="dataAgenda" class="input" type="date" /></div>
+          <div class="field"><label for="pacienteAgenda">Paciente</label><input id="pacienteAgenda" class="input" placeholder="Nome do paciente" /></div>
+          <div class="field"><label for="tipoSessao">Tipo</label><select id="tipoSessao" class="select"><option>Avaliação</option><option>Psicoterapia</option><option>Retorno</option><option>Online</option></select></div>
+          <div class="field"><label for="horaSessao">Hora</label><input id="horaSessao" class="input" type="time" /></div>
+          <div class="field" style="flex:0 0 auto; align-self:flex-end"><button id="btnAgendar" class="btn primary"><i class="fa-solid fa-calendar-plus"></i> Agendar</button></div>
         </div>
       </div>
-
       <div class="card">
         <h3>Próximas consultas</h3>
         <table class="table" aria-label="Próximas consultas">
-          <thead>
-            <tr>
-              <th>Data</th>
-              <th>Hora</th>
-              <th>Paciente</th>
-              <th>Tipo</th>
-              <th>Status</th>
-              <th style="width:140px">Ações</th>
-            </tr>
-          </thead>
-          <tbody id="listaAgenda">
-            <tr><td colspan="6" style="color:var(--muted)">Nenhuma consulta agendada</td></tr>
-          </tbody>
+          <thead><tr><th>Data</th><th>Hora</th><th>Paciente</th><th>Tipo</th><th>Status</th><th style="width:140px">Ações</th></tr></thead>
+          <tbody id="listaAgenda"><tr><td colspan="6" style="color:var(--muted)">Nenhuma consulta agendada</td></tr></tbody>
         </table>
       </div>
     </section>
 
-    <!-- Financeiro -->
     <section id="financeiro" class="section" aria-labelledby="tab-financeiro">
       <div class="grid cards">
-        <div class="card">
-          <h3>Receitas (mês)</h3>
-          <div class="metric" id="vReceitas">R$ 0,00</div>
-        </div>
-        <div class="card">
-          <h3>Despesas (mês)</h3>
-          <div class="metric" id="vDespesas">R$ 0,00</div>
-        </div>
-        <div class="card">
-          <h3>Saldo</h3>
-          <div class="metric" id="vSaldo">R$ 0,00</div>
-        </div>
-        <div class="card">
-          <h3>Taxa de Adimplência</h3>
-          <div class="metric" id="vAdimplencia">0%</div>
-        </div>
+        <div class="card">Receitas (mês)<div id="vReceitas" class="metric">R$ 0,00</div></div>
+        <div class="card">Despesas (mês)<div id="vDespesas" class="metric">R$ 0,00</div></div>
+        <div class="card">Saldo<div id="vSaldo" class="metric">R$ 0,00</div></div>
+        <div class="card">Taxa de Adimplência<div id="vAdimplencia" class="metric">0%</div></div>
       </div>
-
       <div class="card" style="margin-top:16px">
         <h3>Movimentações recentes</h3>
         <table class="table" aria-label="Movimentações">
-          <thead>
-            <tr>
-              <th>Data</th>
-              <th>Descrição</th>
-              <th>Tipo</th>
-              <th>Valor</th>
-            </tr>
-          </thead>
-          <tbody id="listaFinanceiro">
-            <tr><td colspan="4" style="color:var(--muted)">Sem lançamentos</td></tr>
-          </tbody>
+          <thead><tr><th>Data</th><th>Descrição</th><th>Tipo</th><th>Valor</th></tr></thead>
+          <tbody id="listaFinanceiro"><tr><td colspan="4" style="color:var(--muted)">Sem lançamentos</td></tr></tbody>
         </table>
       </div>
     </section>
 
+    <section id="login" class="section" aria-labelledby="tab-login">
+      <div class="card">
+        <h3>Acesso</h3>
+        <div class="row">
+          <div class="field"><label for="email">E-mail</label><input id="email" class="input" type="email" placeholder="seu@email.com" /></div>
+          <div class="field"><label for="senha">Senha</label><input id="senha" class="input" type="password" placeholder="••••••" /></div>
+          <div class="field" style="flex:0 0 auto; align-self:flex-end"><button class="btn primary"><i class="fa-solid fa-right-to-bracket"></i> Entrar</button></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Tabs: alterna seção ativa e estado dos botões
+    document.addEventListener('DOMContentLoaded', () => {
+      const buttons = Array.from(document.querySelectorAll('.tab-btn'));
+      const sections = Array.from(document.querySelectorAll('.section'));
+
+      function activate(tabId){
+        sections.forEach(sec => sec.classList.toggle('active', sec.id === tabId));
+        buttons.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tabId));
+        // Atualiza hash para permitir navegação direta e histórico
+        if (location.hash !== '#' + tabId) {
+          history.replaceState(null, '', '#' + tabId);
+        }
+      }
+
+      // Clique nos botões
+      buttons.forEach(btn => {
+        btn.addEventListener('click', () => activate(btn.dataset.tab));
+      });
+
+      // Suporte a hash inicial (ex.: #agenda)
+      const initial = (location.hash || '#dashboard').replace('#','');
+      const validInitial = sections.some(s => s.id === initial) ? initial : 'dashboard';
+      activate(validInitial);
+
+      // Acompanha mudanças manuais no hash (ex.: voltar/avançar)
+      window.addEventListener('hashchange', () => {
+        const h = (location.hash || '#dashboard').replace('#','');
+        if (sections.some(s => s.id === h)) activate(h);
+      });
+    });
+  </script>
+</body>
+</html>
