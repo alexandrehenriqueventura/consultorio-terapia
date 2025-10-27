@@ -1,270 +1,298 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consultório Terapia - Sistema de Gerenciamento</title>
-    <meta name="description" content="Sistema moderno para gerenciamento de pacientes e consultas de consultório de terapia">
-    <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Consultório Terapia - Sistema de Gerenciamento</title>
+  <meta name="description" content="Sistema moderno para gerenciamento de pacientes e consultas de consultório de terapia" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/2.0.0/modern-normalize.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <style>
+    :root{
+      --bg:#0f172a; /* slate-900 */
+      --panel:#111827; /* gray-900 */
+      --muted:#94a3b8; /* slate-400 */
+      --text:#e5e7eb; /* gray-200 */
+      --primary:#22c55e; /* green-500 */
+      --primary-600:#16a34a; /* green-600 */
+      --ring:#334155; /* slate-700 */
+      --card:#0b1220; /* dark */
+      --danger:#ef4444;
+      --warning:#f59e0b;
+      --ok:#22c55e;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background:linear-gradient(180deg,#0b1220 0%, #0f172a 100%);
+      color:var(--text); font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+    }
+    a{color:inherit; text-decoration:none}
+    .container{max-width:1100px; margin:0 auto; padding:0 16px}
+
+    /* Header */
+    .header{position:sticky; top:0; z-index:20; backdrop-filter:saturate(1.2) blur(6px); background:rgba(2,6,23,.6); border-bottom:1px solid var(--ring)}
+    .header-inner{display:flex; align-items:center; justify-content:space-between; padding:14px 0}
+    .logo{display:flex; align-items:center; gap:10px}
+    .logo i{color:var(--primary)}
+    .logo h1{font-size:18px; letter-spacing:.3px; margin:0}
+
+    /* Tabs nav */
+    .nav-menu{display:flex; gap:8px; flex-wrap:wrap}
+    .tab-btn{appearance:none; border:1px solid var(--ring); background:#0b1323; color:var(--text); padding:10px 12px; border-radius:10px; display:flex; align-items:center; gap:8px; cursor:pointer; transition:.2s ease}
+    .tab-btn:hover{border-color:var(--primary); box-shadow:0 0 0 2px rgba(34,197,94,.15) inset}
+    .tab-btn.active{background:linear-gradient(180deg,#0f1a30, #0b1323); border-color:var(--primary); color:#ecfeff}
+
+    /* Layout */
+    .main{padding:24px 0}
+    .grid{display:grid; gap:16px}
+    .cards{grid-template-columns: repeat(12, 1fr)}
+    .card{grid-column: span 12; background:linear-gradient(180deg,#0b1220,#0e1527); border:1px solid var(--ring); border-radius:14px; padding:16px}
+    .card h3{margin:4px 0 8px; font-size:14px; color:var(--muted); font-weight:600}
+    .metric{font-size:28px; font-weight:700}
+    .card .icon{width:40px; height:40px; display:grid; place-items:center; border-radius:10px; background:rgba(34,197,94,.08); color:var(--primary); border:1px solid rgba(34,197,94,.25)}
+
+    /* Sections */
+    .section{display:none; animation:fade .25s ease}
+    .section.active{display:block}
+    @keyframes fade{from{opacity:.6; transform:translateY(4px)} to{opacity:1; transform:none}}
+
+    /* Tables */
+    .table{width:100%; border-collapse:collapse; overflow:hidden; border-radius:12px; border:1px solid var(--ring)}
+    .table th,.table td{padding:12px 10px; text-align:left}
+    .table thead th{background:#0c1426; color:#cbd5e1; font-size:12px; letter-spacing:.4px; text-transform:uppercase}
+    .table tbody tr{border-top:1px solid var(--ring)}
+    .table tbody tr:hover{background:#0c1322}
+
+    /* Forms */
+    .row{display:flex; gap:12px; flex-wrap:wrap}
+    .field{flex:1 1 220px; display:flex; flex-direction:column; gap:6px}
+    .input, .select, .textarea{background:#0a1220; color:var(--text); border:1px solid var(--ring); border-radius:10px; padding:10px 12px}
+    .textarea{min-height:92px}
+    .btn{appearance:none; border:1px solid var(--ring); background:#0b1323; color:var(--text); padding:10px 14px; border-radius:10px; cursor:pointer; transition:.2s}
+    .btn.primary{border-color:var(--primary); background:linear-gradient(180deg,#173a2a, #0b1323)}
+    .btn.primary:hover{box-shadow:0 0 0 2px rgba(34,197,94,.15) inset}
+    .btn.warn{border-color:var(--warning); color:#fde68a}
+    .btn.danger{border-color:var(--danger); color:#fecaca}
+
+    /* Footer */
+    footer{margin:36px 0 10px; color:var(--muted); font-size:12px; text-align:center}
+
+    /* Responsive */
+    @media (min-width:640px){
+      .card{grid-column: span 6}
+    }
+    @media (min-width:960px){
+      .card{grid-column: span 3}
+    }
+  </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="logo">
-                <i class="fas fa-brain"></i>
-                <h1>Consultório Terapia</h1>
-            </div>
-            <nav class="nav-menu">
-                <ul>
-                    <li><a href="#dashboard" class="nav-link active"><i class="fas fa-home"></i> Dashboard</a></li>
-                    <li><a href="#pacientes" class="nav-link"><i class="fas fa-users"></i> Pacientes</a></li>
-                    <li><a href="#consultas" class="nav-link"><i class="fas fa-calendar-alt"></i> Consultas</a></li>
-                    <li><a href="#financeiro" class="nav-link"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
-                </ul>
-            </nav>
-            <div class="user-actions">
-                <button class="btn btn-outline" id="btnLogin"><i class="fas fa-sign-in-alt"></i> Login</button>
-                <button class="btn btn-primary" id="btnCadastro"><i class="fas fa-user-plus"></i> Cadastrar</button>
-            </div>
-        </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="main-content">
-        <div class="container">
-            <!-- Dashboard Section -->
-            <section id="dashboard" class="section active">
-                <h2 class="section-title">Dashboard</h2>
-                <div class="dashboard-cards">
-                    <div class="card">
-                        <div class="card-icon"><i class="fas fa-users"></i></div>
-                        <div class="card-content">
-                            <h3>Total de Pacientes</h3>
-                            <p class="card-number" id="totalPacientes">0</p>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-icon"><i class="fas fa-calendar-check"></i></div>
-                        <div class="card-content">
-                            <h3>Consultas Hoje</h3>
-                            <p class="card-number" id="consultasHoje">0</p>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-icon"><i class="fas fa-clock"></i></div>
-                        <div class="card-content">
-                            <h3>Próximas Consultas</h3>
-                            <p class="card-number" id="proximasConsultas">0</p>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-icon"><i class="fas fa-money-bill-wave"></i></div>
-                        <div class="card-content">
-                            <h3>Receita Mensal</h3>
-                            <p class="card-number" id="receitaMensal">R$ 0,00</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Seção de Pacientes -->
-            <section id="pacientes" class="section">
-                <div class="section-header">
-                    <h2 class="section-title">Gerenciamento de Pacientes</h2>
-                    <button class="btn btn-primary" id="btnNovoPaciente"><i class="fas fa-plus"></i> Novo Paciente</button>
-                </div>
-                
-                <!-- Formulário de Cadastro -->
-                <div id="formCadastroPaciente" class="form-container hidden">
-                    <h3>Cadastro de Novo Paciente</h3>
-                    <form id="pacienteForm">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="nome">Nome Completo *</label>
-                                <input type="text" id="nome" name="nome" required placeholder="Digite o nome completo">
-                            </div>
-                            <div class="form-group">
-                                <label for="cpf">CPF *</label>
-                                <input type="text" id="cpf" name="cpf" required placeholder="000.000.000-00">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="dataNascimento">Data de Nascimento *</label>
-                                <input type="date" id="dataNascimento" name="dataNascimento" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="telefone">Telefone *</label>
-                                <input type="tel" id="telefone" name="telefone" required placeholder="(00) 00000-0000">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="email">E-mail</label>
-                                <input type="email" id="email" name="email" placeholder="email@exemplo.com">
-                            </div>
-                            <div class="form-group">
-                                <label for="convenio">Convênio</label>
-                                <select id="convenio" name="convenio">
-                                    <option value="particular">Particular</option>
-                                    <option value="plano">Plano de Saúde</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="observacoes">Observações</label>
-                            <textarea id="observacoes" name="observacoes" rows="3" placeholder="Observações gerais sobre o paciente"></textarea>
-                        </div>
-                        <div class="form-actions">
-                            <button type="button" class="btn btn-outline" id="btnCancelarCadastro">Cancelar</button>
-                            <button type="submit" class="btn btn-primary">Salvar Paciente</button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Busca e Filtros -->
-                <div class="search-container">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="searchPaciente" placeholder="Buscar paciente por nome, CPF ou telefone...">
-                    </div>
-                    <div class="filters">
-                        <select id="filtroConvenio">
-                            <option value="">Todos os Convênios</option>
-                            <option value="particular">Particular</option>
-                            <option value="plano">Plano de Saúde</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Lista de Pacientes -->
-                <div class="table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Nome</th>
-                                <th>CPF</th>
-                                <th>Telefone</th>
-                                <th>E-mail</th>
-                                <th>Convênio</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="listaPacientes">
-                            <tr class="empty-state">
-                                <td colspan="6">
-                                    <i class="fas fa-users"></i>
-                                    <p>Nenhum paciente cadastrado ainda</p>
-                                    <p>Clique em "Novo Paciente" para começar</p>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- Seção de Consultas -->
-            <section id="consultas" class="section">
-                <div class="section-header">
-                    <h2 class="section-title">Agenda de Consultas</h2>
-                    <button class="btn btn-primary" id="btnNovaConsulta"><i class="fas fa-plus"></i> Nova Consulta</button>
-                </div>
-                <div class="calendar-container">
-                    <div id="calendario" class="calendar">
-                        <p class="info-message"><i class="fas fa-calendar-alt"></i> Calendário de consultas será carregado aqui</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Seção Financeiro -->
-            <section id="financeiro" class="section">
-                <div class="section-header">
-                    <h2 class="section-title">Controle Financeiro</h2>
-                    <button class="btn btn-primary" id="btnNovoLancamento"><i class="fas fa-plus"></i> Novo Lançamento</button>
-                </div>
-                <div class="financial-summary">
-                    <div class="summary-card receitas">
-                        <h4><i class="fas fa-arrow-up"></i> Receitas</h4>
-                        <p class="amount" id="totalReceitas">R$ 0,00</p>
-                    </div>
-                    <div class="summary-card despesas">
-                        <h4><i class="fas fa-arrow-down"></i> Despesas</h4>
-                        <p class="amount" id="totalDespesas">R$ 0,00</p>
-                    </div>
-                    <div class="summary-card saldo">
-                        <h4><i class="fas fa-wallet"></i> Saldo</h4>
-                        <p class="amount" id="saldoTotal">R$ 0,00</p>
-                    </div>
-                </div>
-            </section>
-        </div>
-    </main>
-
-    <!-- Modal de Login -->
-    <div id="modalLogin" class="modal hidden">
-        <div class="modal-content">
-            <span class="close" id="closeLogin">&times;</span>
-            <h3><i class="fas fa-sign-in-alt"></i> Login</h3>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="loginEmail">E-mail</label>
-                    <input type="email" id="loginEmail" required placeholder="seu@email.com">
-                </div>
-                <div class="form-group">
-                    <label for="loginSenha">Senha</label>
-                    <input type="password" id="loginSenha" required placeholder="Digite sua senha">
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">Entrar</button>
-            </form>
-        </div>
+  <header class="header">
+    <div class="container header-inner">
+      <div class="logo">
+        <i class="fa-solid fa-brain fa-lg"></i>
+        <h1>Consultório Terapia</h1>
+      </div>
+      <nav class="nav-menu" aria-label="Navegação por abas">
+        <button class="tab-btn active" data-tab="dashboard"><i class="fa-solid fa-house"></i> Dashboard</button>
+        <button class="tab-btn" data-tab="pacientes"><i class="fa-solid fa-user-group"></i> Pacientes</button>
+        <button class="tab-btn" data-tab="agenda"><i class="fa-solid fa-calendar-days"></i> Agenda</button>
+        <button class="tab-btn" data-tab="financeiro"><i class="fa-solid fa-sack-dollar"></i> Financeiro</button>
+        <button class="tab-btn" data-tab="login"><i class="fa-solid fa-right-to-bracket"></i> Login</button>
+      </nav>
     </div>
+  </header>
 
-    <!-- Modal de Cadastro -->
-    <div id="modalCadastro" class="modal hidden">
-        <div class="modal-content">
-            <span class="close" id="closeCadastro">&times;</span>
-            <h3><i class="fas fa-user-plus"></i> Criar Conta</h3>
-            <form id="cadastroForm">
-                <div class="form-group">
-                    <label for="cadastroNome">Nome Completo</label>
-                    <input type="text" id="cadastroNome" required placeholder="Seu nome completo">
-                </div>
-                <div class="form-group">
-                    <label for="cadastroEmail">E-mail</label>
-                    <input type="email" id="cadastroEmail" required placeholder="seu@email.com">
-                </div>
-                <div class="form-group">
-                    <label for="cadastroSenha">Senha</label>
-                    <input type="password" id="cadastroSenha" required placeholder="Crie uma senha segura">
-                </div>
-                <div class="form-group">
-                    <label for="cadastroSenhaConfirm">Confirmar Senha</label>
-                    <input type="password" id="cadastroSenhaConfirm" required placeholder="Confirme sua senha">
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">Cadastrar</button>
-            </form>
+  <main class="main container">
+    <!-- Dashboard -->
+    <section id="dashboard" class="section active" aria-labelledby="tab-dashboard">
+      <div class="grid cards">
+        <div class="card">
+          <div class="row" style="align-items:center; gap:12px">
+            <div class="icon"><i class="fa-solid fa-users"></i></div>
+            <div>
+              <h3>Total de Pacientes</h3>
+              <div class="metric" id="kpiPacientes">0</div>
+            </div>
+          </div>
         </div>
-    </div>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2025 Consultório Terapia - Sistema de Gerenciamento. Todos os direitos reservados.</p>
+        <div class="card">
+          <div class="row" style="align-items:center; gap:12px">
+            <div class="icon"><i class="fa-solid fa-calendar-check"></i></div>
+            <div>
+              <h3>Consultas Hoje</h3>
+              <div class="metric" id="kpiHoje">0</div>
+            </div>
+          </div>
         </div>
-    </footer>
+        <div class="card">
+          <div class="row" style="align-items:center; gap:12px">
+            <div class="icon"><i class="fa-solid fa-clock"></i></div>
+            <div>
+              <h3>Próximas 7 dias</h3>
+              <div class="metric" id="kpiSemana">0</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="row" style="align-items:center; gap:12px">
+            <div class="icon" style="background:rgba(59,130,246,.08); color:#60a5fa; border-color:rgba(59,130,246,.25)"><i class="fa-solid fa-signal"></i></div>
+            <div>
+              <h3>Taxa de Comparecimento</h3>
+              <div class="metric" id="kpiComparecimento">0%</div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    <!-- Scripts -->
-    <script src="js/script.js"></script>
-    <script>
-        // Service Worker Registration
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js')
-                .then(registration => console.log('Service Worker registrado:', registration))
-                .catch(error => console.log('Erro ao registrar Service Worker:', error));
-        }
-    </script>
-</body>
-</html>
+      <div class="grid" style="margin-top:16px">
+        <div class="card" style="grid-column: span 12">
+          <h3>Hoje</h3>
+          <table class="table" aria-label="Consultas de hoje">
+            <thead>
+              <tr>
+                <th>Hora</th>
+                <th>Paciente</th>
+                <th>Tipo</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="tabelaHoje">
+              <tr><td colspan="4" style="color:var(--muted)">Nenhuma consulta hoje</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pacientes -->
+    <section id="pacientes" class="section" aria-labelledby="tab-pacientes">
+      <div class="card" style="margin-bottom:12px">
+        <div class="row">
+          <div class="field">
+            <label for="buscaPaciente">Buscar</label>
+            <input id="buscaPaciente" class="input" placeholder="Nome, email ou telefone" />
+          </div>
+          <div class="field" style="max-width:200px">
+            <label for="filtroStatus">Status</label>
+            <select id="filtroStatus" class="select">
+              <option value="">Todos</option>
+              <option value="ativo">Ativo</option>
+              <option value="inativo">Inativo</option>
+            </select>
+          </div>
+          <div class="field" style="flex:0 0 auto; align-self:flex-end">
+            <button id="btnNovoPaciente" class="btn primary"><i class="fa-solid fa-user-plus"></i> Novo</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <table class="table" aria-label="Lista de pacientes">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Contato</th>
+              <th>Status</th>
+              <th style="width:110px">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="listaPacientes">
+            <tr><td colspan="4" style="color:var(--muted)">Nenhum paciente cadastrado</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Agenda -->
+    <section id="agenda" class="section" aria-labelledby="tab-agenda">
+      <div class="card" style="margin-bottom:12px">
+        <div class="row">
+          <div class="field">
+            <label for="dataAgenda">Data</label>
+            <input id="dataAgenda" type="date" class="input" />
+          </div>
+          <div class="field">
+            <label for="pacienteAgenda">Paciente</label>
+            <input id="pacienteAgenda" class="input" placeholder="Nome do paciente" />
+          </div>
+          <div class="field">
+            <label for="tipoSessao">Tipo</label>
+            <select id="tipoSessao" class="select">
+              <option>Avaliação</option>
+              <option>Psicoterapia</option>
+              <option>Retorno</option>
+              <option>Online</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="horaSessao">Hora</label>
+            <input id="horaSessao" type="time" class="input" />
+          </div>
+          <div class="field" style="flex:0 0 auto; align-self:flex-end">
+            <button id="btnAgendar" class="btn primary"><i class="fa-solid fa-calendar-plus"></i> Agendar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Próximas consultas</h3>
+        <table class="table" aria-label="Próximas consultas">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Hora</th>
+              <th>Paciente</th>
+              <th>Tipo</th>
+              <th>Status</th>
+              <th style="width:140px">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="listaAgenda">
+            <tr><td colspan="6" style="color:var(--muted)">Nenhuma consulta agendada</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Financeiro -->
+    <section id="financeiro" class="section" aria-labelledby="tab-financeiro">
+      <div class="grid cards">
+        <div class="card">
+          <h3>Receitas (mês)</h3>
+          <div class="metric" id="vReceitas">R$ 0,00</div>
+        </div>
+        <div class="card">
+          <h3>Despesas (mês)</h3>
+          <div class="metric" id="vDespesas">R$ 0,00</div>
+        </div>
+        <div class="card">
+          <h3>Saldo</h3>
+          <div class="metric" id="vSaldo">R$ 0,00</div>
+        </div>
+        <div class="card">
+          <h3>Taxa de Adimplência</h3>
+          <div class="metric" id="vAdimplencia">0%</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h3>Movimentações recentes</h3>
+        <table class="table" aria-label="Movimentações">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Descrição</th>
+              <th>Tipo</th>
+              <th>Valor</th>
+            </tr>
+          </thead>
+          <tbody id="listaFinanceiro">
+            <tr><td colspan="4" style="color:var(--muted)">Sem lançamentos</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
