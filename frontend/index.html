@@ -4,17 +4,266 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consultório Terapia - Sistema de Gerenciamento</title>
-    <meta name="description" content="Sistema moderno para gerenciamento de pacientes e consultas de consultório de terapia psicológica">
+    <meta name="description" content="Sistema moderno para gerenciamento de pacientes e consultas de consultório de terapia">
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- Aqui vai o conteúdo da aplicação, Dashboard, cadastro/lista de pacientes, consultas, financeiro etc. conforme estrutura HTML sugerida -->
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-brain"></i>
+                <h1>Consultório Terapia</h1>
+            </div>
+            <nav class="nav-menu">
+                <ul>
+                    <li><a href="#dashboard" class="nav-link active"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li><a href="#pacientes" class="nav-link"><i class="fas fa-users"></i> Pacientes</a></li>
+                    <li><a href="#consultas" class="nav-link"><i class="fas fa-calendar-alt"></i> Consultas</a></li>
+                    <li><a href="#financeiro" class="nav-link"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
+                </ul>
+            </nav>
+            <div class="user-actions">
+                <button class="btn btn-outline" id="btnLogin"><i class="fas fa-sign-in-alt"></i> Login</button>
+                <button class="btn btn-primary" id="btnCadastro"><i class="fas fa-user-plus"></i> Cadastrar</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="section active">
+                <h2 class="section-title">Dashboard</h2>
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-users"></i></div>
+                        <div class="card-content">
+                            <h3>Total de Pacientes</h3>
+                            <p class="card-number" id="totalPacientes">0</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-calendar-check"></i></div>
+                        <div class="card-content">
+                            <h3>Consultas Hoje</h3>
+                            <p class="card-number" id="consultasHoje">0</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-clock"></i></div>
+                        <div class="card-content">
+                            <h3>Próximas Consultas</h3>
+                            <p class="card-number" id="proximasConsultas">0</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-money-bill-wave"></i></div>
+                        <div class="card-content">
+                            <h3>Receita Mensal</h3>
+                            <p class="card-number" id="receitaMensal">R$ 0,00</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção de Pacientes -->
+            <section id="pacientes" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Gerenciamento de Pacientes</h2>
+                    <button class="btn btn-primary" id="btnNovoPaciente"><i class="fas fa-plus"></i> Novo Paciente</button>
+                </div>
+                
+                <!-- Formulário de Cadastro -->
+                <div id="formCadastroPaciente" class="form-container hidden">
+                    <h3>Cadastro de Novo Paciente</h3>
+                    <form id="pacienteForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="nome">Nome Completo *</label>
+                                <input type="text" id="nome" name="nome" required placeholder="Digite o nome completo">
+                            </div>
+                            <div class="form-group">
+                                <label for="cpf">CPF *</label>
+                                <input type="text" id="cpf" name="cpf" required placeholder="000.000.000-00">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="dataNascimento">Data de Nascimento *</label>
+                                <input type="date" id="dataNascimento" name="dataNascimento" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="telefone">Telefone *</label>
+                                <input type="tel" id="telefone" name="telefone" required placeholder="(00) 00000-0000">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email">E-mail</label>
+                                <input type="email" id="email" name="email" placeholder="email@exemplo.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="convenio">Convênio</label>
+                                <select id="convenio" name="convenio">
+                                    <option value="particular">Particular</option>
+                                    <option value="plano">Plano de Saúde</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="observacoes">Observações</label>
+                            <textarea id="observacoes" name="observacoes" rows="3" placeholder="Observações gerais sobre o paciente"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-outline" id="btnCancelarCadastro">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Salvar Paciente</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Busca e Filtros -->
+                <div class="search-container">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchPaciente" placeholder="Buscar paciente por nome, CPF ou telefone...">
+                    </div>
+                    <div class="filters">
+                        <select id="filtroConvenio">
+                            <option value="">Todos os Convênios</option>
+                            <option value="particular">Particular</option>
+                            <option value="plano">Plano de Saúde</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Lista de Pacientes -->
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>CPF</th>
+                                <th>Telefone</th>
+                                <th>E-mail</th>
+                                <th>Convênio</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="listaPacientes">
+                            <tr class="empty-state">
+                                <td colspan="6">
+                                    <i class="fas fa-users"></i>
+                                    <p>Nenhum paciente cadastrado ainda</p>
+                                    <p>Clique em "Novo Paciente" para começar</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Seção de Consultas -->
+            <section id="consultas" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Agenda de Consultas</h2>
+                    <button class="btn btn-primary" id="btnNovaConsulta"><i class="fas fa-plus"></i> Nova Consulta</button>
+                </div>
+                <div class="calendar-container">
+                    <div id="calendario" class="calendar">
+                        <p class="info-message"><i class="fas fa-calendar-alt"></i> Calendário de consultas será carregado aqui</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção Financeiro -->
+            <section id="financeiro" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Controle Financeiro</h2>
+                    <button class="btn btn-primary" id="btnNovoLancamento"><i class="fas fa-plus"></i> Novo Lançamento</button>
+                </div>
+                <div class="financial-summary">
+                    <div class="summary-card receitas">
+                        <h4><i class="fas fa-arrow-up"></i> Receitas</h4>
+                        <p class="amount" id="totalReceitas">R$ 0,00</p>
+                    </div>
+                    <div class="summary-card despesas">
+                        <h4><i class="fas fa-arrow-down"></i> Despesas</h4>
+                        <p class="amount" id="totalDespesas">R$ 0,00</p>
+                    </div>
+                    <div class="summary-card saldo">
+                        <h4><i class="fas fa-wallet"></i> Saldo</h4>
+                        <p class="amount" id="saldoTotal">R$ 0,00</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal de Login -->
+    <div id="modalLogin" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" id="closeLogin">&times;</span>
+            <h3><i class="fas fa-sign-in-alt"></i> Login</h3>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">E-mail</label>
+                    <input type="email" id="loginEmail" required placeholder="seu@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="loginSenha">Senha</label>
+                    <input type="password" id="loginSenha" required placeholder="Digite sua senha">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Entrar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Cadastro -->
+    <div id="modalCadastro" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" id="closeCadastro">&times;</span>
+            <h3><i class="fas fa-user-plus"></i> Criar Conta</h3>
+            <form id="cadastroForm">
+                <div class="form-group">
+                    <label for="cadastroNome">Nome Completo</label>
+                    <input type="text" id="cadastroNome" required placeholder="Seu nome completo">
+                </div>
+                <div class="form-group">
+                    <label for="cadastroEmail">E-mail</label>
+                    <input type="email" id="cadastroEmail" required placeholder="seu@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="cadastroSenha">Senha</label>
+                    <input type="password" id="cadastroSenha" required placeholder="Crie uma senha segura">
+                </div>
+                <div class="form-group">
+                    <label for="cadastroSenhaConfirm">Confirmar Senha</label>
+                    <input type="password" id="cadastroSenhaConfirm" required placeholder="Confirme sua senha">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Cadastrar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Consultório Terapia - Sistema de Gerenciamento. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
     <script src="js/script.js"></script>
     <script>
+        // Service Worker Registration
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
+            navigator.serviceWorker.register('sw.js')
+                .then(registration => console.log('Service Worker registrado:', registration))
+                .catch(error => console.log('Erro ao registrar Service Worker:', error));
         }
     </script>
 </body>
