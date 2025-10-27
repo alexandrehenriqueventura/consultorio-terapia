@@ -22,7 +22,8 @@ app.use(limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/api/pacientes', require('./routes/pacientes'));
+// Rotas
+app.use('/api/pacientes', require('./routes/pacienteRoutes'));
 
 app.get('/health', (req, res) => {
   res.json({
@@ -32,6 +33,7 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Middleware de erro
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({
@@ -40,6 +42,7 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Rota 404
 app.use('*', (req, res) => {
   res.status(404).json({ error: 'Rota não encontrada' });
 });
