@@ -1,0 +1,3 @@
+// Utilize o JavaScript SPA principal desenvolvido anteriormente
+// Estrutura orientada a objetos, navegação, modal de pacientes, dashboard...
+// Inclua toda a definição da classe ConsultorioApp e código de inicialização
