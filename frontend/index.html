@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Consultório L'amour Psique - Sistema de Gerenciamento</title>
   <meta name="description" content="Sistema moderno para gerenciamento de pacientes e consultas de consultório de terapia" />
-  <link rel="manifest" href="manifest.json" />
+  <link rel="manifest" href="/manifest.json" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/2.0.0/modern-normalize.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <style>
@@ -15,18 +15,15 @@
     body{ margin:0; background:linear-gradient(180deg,#0b1220 0%, #0f172a 100%); color:var(--text); font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; }
     a{color:inherit; text-decoration:none}
     .container{max-width:1100px; margin:0 auto; padding:0 16px}
-    /* Header */
     .header{position:sticky; top:0; z-index:20; backdrop-filter:saturate(1.2) blur(6px); background:rgba(2,6,23,.6); border-bottom:1px solid var(--ring)}
     .header-inner{display:flex; align-items:center; justify-content:space-between; padding:14px 0}
     .logo{display:flex; align-items:center; gap:10px}
     .logo i{color:var(--primary)}
     .logo h1{font-size:18px; letter-spacing:.3px; margin:0}
-    /* Tabs nav */
     .nav-menu{display:flex; gap:8px; flex-wrap:wrap}
     .tab-btn{appearance:none; border:1px solid var(--ring); background:#0b1323; color:var(--text); padding:10px 12px; border-radius:10px; display:flex; align-items:center; gap:8px; cursor:pointer; transition:.2s ease}
     .tab-btn:hover{border-color:var(--primary); box-shadow:0 0 0 2px rgba(34,197,94,.15) inset}
     .tab-btn.active{background:linear-gradient(180deg,#0f1a30, #0b1323); border-color:var(--primary); color:#ecfeff}
-    /* Layout */
     main{padding:24px 0}
     .grid{display:grid; gap:16px}
     .cards{grid-template-columns: repeat(12, 1fr)}
@@ -34,181 +31,215 @@
     .card h3{margin:4px 0 8px; font-size:14px; color:var(--muted); font-weight:600}
     .metric{font-size:28px; font-weight:700}
     .card .icon{width:40px; height:40px; display:grid; place-items:center; border-radius:10px; background:rgba(34,197,94,.08); color:var(--primary); border:1px solid rgba(34,197,94,.25)}
-    /* Sections */
     .section{display:none; animation:fade .25s ease}
     .section.active{display:block}
     @keyframes fade{from{opacity:.6; transform:translateY(4px)} to{opacity:1; transform:none}}
-    /* Tables */
     .table{width:100%; border-collapse:collapse; overflow:hidden; border-radius:12px; border:1px solid var(--ring)}
     .table th,.table td{padding:12px 10px; text-align:left}
     .table thead th{background:#0c1426; color:#cbd5e1; font-size:12px; letter-spacing:.4px; text-transform:uppercase}
     .table tbody tr{border-top:1px solid var(--ring)}
     .table tbody tr:hover{background:#0c1322}
-    /* Forms */
     .row{display:flex; gap:12px; flex-wrap:wrap}
     .field{flex:1 1 220px; display:flex; flex-direction:column; gap:6px}
-    .input, select, textarea{background:#0a1220; color:var(--text); border:1px solid var(--ring); border-radius:10px; padding:10px 12px}
+    input, select, textarea{background:#0a1220; color:var(--text); border:1px solid var(--ring); border-radius:10px; padding:10px 12px}
     textarea{min-height:92px}
     .btn{appearance:none; border:1px solid var(--ring); background:#0b1323; color:var(--text); padding:10px 14px; border-radius:10px; cursor:pointer; transition:.2s}
     .btn.primary{border-color:var(--primary); background:linear-gradient(180deg,#173a2a, #0b1323)}
     .btn.primary:hover{box-shadow:0 0 0 2px rgba(34,197,94,.15) inset}
     .btn.warn{border-color:var(--warning); color:#fde68a}
     .btn.danger{border-color:var(--danger); color:#fecaca}
-    /* Footer */
     footer{margin:36px 0 10px; color:var(--muted); font-size:12px; text-align:center}
-    /* Responsive */
     @media (min-width:640px){ .card{grid-column: span 6} }
     @media (min-width:960px){ .card{grid-column: span 3} }
+    .login-backdrop{position:fixed; inset:0; display:grid; place-items:center; background:linear-gradient(180deg,#0b1220,#0f172a)}
+    .login-container{width:min(420px, 92vw); background:linear-gradient(180deg,#0b1220,#0e1527); border:1px solid var(--ring); border-radius:16px; padding:22px; box-shadow:0 6px 24px rgba(0,0,0,.35)}
+    .login-header{display:flex; align-items:center; gap:10px; margin-bottom:12px}
+    .error{color:#fecaca; font-size:12px; margin-top:8px}
+    .hidden{display:none !important}
   </style>
 </head>
 <body>
-  <header class="header">
+  <div id="loginScreen" class="login-backdrop">
+    <div class="login-container" id="login-container">
+      <div class="login-header">
+        <i class="fa-solid fa-user-shield"></i>
+        <h2 style="margin:0; font-size:18px">Acesso ao Sistema</h2>
+      </div>
+      <form id="loginForm">
+        <div class="field">
+          <label for="username">Usuário</label>
+          <input id="username" name="username" placeholder="Digite seu usuário" autocomplete="username" required />
+        </div>
+        <div class="field">
+          <label for="password">Senha</label>
+          <input id="password" name="password" type="password" placeholder="Digite sua senha" autocomplete="current-password" required />
+        </div>
+        <div class="row" style="justify-content:space-between; align-items:center">
+          <button type="submit" class="btn primary" style="flex:1">Entrar</button>
+        </div>
+        <div id="loginError" class="error hidden">Usuário ou senha inválidos.</div>
+      </form>
+    </div>
+  </div>
+
+  <header class="header" id="appHeader" style="display:none">
     <div class="container header-inner">
-      <a class="logo" href="#">
-        <i class="fa-solid fa-heart"></i>
-        <h1>Consultório L'amour Psique</h1>
-      </a>
-      <nav class="nav-menu" role="tablist">
-        <button class="tab-btn active" id="tab-pacientes" data-target="#pacientes"><i class="fa-solid fa-users"></i> Pacientes</button>
-        <button class="tab-btn" id="tab-consultas" data-target="#consultas"><i class="fa-solid fa-calendar-check"></i> Consultas</button>
-        <button class="tab-btn" id="tab-financeiro" data-target="#financeiro"><i class="fa-solid fa-sack-dollar"></i> Financeiro</button>
-        <button class="tab-btn" id="tab-config" data-target="#config"><i class="fa-solid fa-gear"></i> Configurações</button>
+      <div class="logo">
+        <i class="fa-solid fa-hand-holding-heart"></i>
+        <h1>L'amour Psique</h1>
+      </div>
+      <nav class="nav-menu" id="tabs">
+        <button class="tab-btn active" data-tab="dashboard"><i class="fa-solid fa-gauge"></i> Dashboard</button>
+        <button class="tab-btn" data-tab="agenda"><i class="fa-regular fa-calendar"></i> Agenda</button>
+        <button class="tab-btn" data-tab="pacientes"><i class="fa-solid fa-user-plus"></i> Cadastro de Pacientes</button>
+        <button class="tab-btn" data-tab="relatorios"><i class="fa-solid fa-chart-simple"></i> Relatórios</button>
       </nav>
     </div>
   </header>
 
-  <main class="container">
-    <!-- Seções existentes do app (placeholders mínimos para manter IDs usados no JS) -->
-    <section id="pacientes" class="section active" aria-labelledby="tab-pacientes">
-      <div class="card">
-        <h3>Resumo de Pacientes</h3>
+  <main class="container" id="appMain" style="display:none">
+    <section id="dashboard" class="section active">
+      <div class="grid cards">
+        <div class="card"><div class="icon"><i class="fa-solid fa-users"></i></div><h3>Pacientes</h3><div class="metric" id="metricPacientes">0</div></div>
+        <div class="card"><div class="icon"><i class="fa-regular fa-calendar"></i></div><h3>Consultas</h3><div class="metric">0</div></div>
+        <div class="card"><div class="icon"><i class="fa-solid fa-circle-check"></i></div><h3>Taxa de presença</h3><div class="metric">0%</div></div>
+        <div class="card"><div class="icon"><i class="fa-solid fa-triangle-exclamation"></i></div><h3>Alertas</h3><div class="metric">0</div></div>
+      </div>
+    </section>
+
+    <section id="agenda" class="section">
+      <h2 style="margin:0 0 12px">Agenda</h2>
+      <p style="color:var(--muted)">Em breve.</p>
+    </section>
+
+    <section id="pacientes" class="section">
+      <h2 style="margin:0 0 12px">Cadastro de Pacientes</h2>
+      <form id="pacienteForm">
         <div class="row">
           <div class="field">
-            <label for="busca-paciente">Buscar paciente</label>
-            <input id="busca-paciente" class="input" type="text" placeholder="Nome, email..." />
+            <label for="nome">Nome completo</label>
+            <input id="nome" name="nome" required />
+          </div>
+          <div class="field">
+            <label for="cpf">CPF</label>
+            <input id="cpf" name="cpf" placeholder="000.000.000-00" />
+          </div>
+          <div class="field">
+            <label for="nascimento">Data de nascimento</label>
+            <input id="nascimento" name="nascimento" type="date" />
           </div>
         </div>
-        <div id="listaPacientes"></div>
-      </div>
+        <div class="row">
+          <div class="field">
+            <label for="telefone">Telefone</label>
+            <input id="telefone" name="telefone" placeholder="(00) 00000-0000" />
+          </div>
+          <div class="field">
+            <label for="email">E-mail</label>
+            <input id="email" name="email" type="email" />
+          </div>
+        </div>
+        <div class="field">
+          <label for="observacoes">Observações</label>
+          <textarea id="observacoes" name="observacoes" placeholder="Histórico, alergias, preferências..."></textarea>
+        </div>
+        <div class="row" style="justify-content:flex-end">
+          <button type="reset" class="btn">Limpar</button>
+          <button type="submit" class="btn primary">Salvar paciente</button>
+        </div>
+      </form>
 
-      <!-- Formulário de cadastro de usuário -->
-      <div class="card">
-        <h3>Cadastro de Usuário</h3>
-        <form id="register-form" class="grid" autocomplete="on">
-          <div class="row">
-            <div class="field">
-              <label for="reg-nome">Nome</label>
-              <input id="reg-nome" name="nome" class="input" type="text" placeholder="Seu nome" required />
-            </div>
-            <div class="field">
-              <label for="reg-email">Email</label>
-              <input id="reg-email" name="email" class="input" type="email" placeholder="seu@email.com" required />
-            </div>
-            <div class="field">
-              <label for="reg-senha">Senha</label>
-              <input id="reg-senha" name="senha" class="input" type="password" placeholder="••••••••" minlength="6" required />
-            </div>
-          </div>
-          <div class="row" style="justify-content:flex-end; gap:8px">
-            <button type="reset" class="btn"><i class="fa-solid fa-eraser"></i> Limpar</button>
-            <button type="submit" class="btn primary"><i class="fa-solid fa-user-plus"></i> Cadastrar</button>
-          </div>
-        </form>
-      </div>
+      <h3 style="margin-top:18px">Pacientes cadastrados</h3>
+      <table class="table" id="pacientesTable">
+        <thead>
+          <tr><th>Nome</th><th>CPF</th><th>Nascimento</th><th>Telefone</th><th>E-mail</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
     </section>
 
-    <section id="consultas" class="section" aria-labelledby="tab-consultas">
-      <div class="card">
-        <h3>Agendar Consulta</h3>
-        <form id="form-consulta" class="grid">
-          <div class="row">
-            <div class="field">
-              <label for="consulta-data">Data</label>
-              <input id="consulta-data" name="data" class="input" type="date" required />
-            </div>
-            <div class="field">
-              <label for="consulta-hora">Hora</label>
-              <input id="consulta-hora" name="hora" class="input" type="time" required />
-            </div>
-            <div class="field">
-              <label for="consulta-notas">Anotações</label>
-              <input id="consulta-notas" name="notas" class="input" type="text" placeholder="Observações da sessão" />
-            </div>
-          </div>
-          <div class="row" style="justify-content:flex-end; gap:8px">
-            <button id="btn-salvar-consulta" type="submit" class="btn primary"><i class="fa-solid fa-calendar-plus"></i> Salvar</button>
-            <button id="btn-limpar-consulta" type="reset" class="btn"><i class="fa-solid fa-eraser"></i> Limpar</button>
-          </div>
-        </form>
-      </div>
-      <div class="card">
-        <h3>Consultas</h3>
-        <div id="listaConsultas"></div>
-      </div>
-    </section>
-
-    <section id="financeiro" class="section" aria-labelledby="tab-financeiro">
-      <div class="grid cards">
-        <div class="card"><h3>Receitas (mês)</h3><div id="vReceitasMes" class="metric">R$ 0,00</div></div>
-        <div class="card"><h3>Despesas (mês)</h3><div id="vDespesas" class="metric">R$ 0,00</div></div>
-        <div class="card"><h3>Saldo</h3><div id="vSaldo" class="metric">R$ 0,00</div></div>
-        <div class="card"><h3>Taxa de Adimplência</h3><div id="vAdimplencia" class="metric">0%</div></div>
-      </div>
-      <div class="card" style="margin-top:16px">
-        <h3>Movimentações recentes</h3>
-        <table class="table" aria-label="Movimentações">
-          <thead><tr><th>Data</th><th>Descrição</th><th>Tipo</th><th>Valor</th></tr></thead>
-          <tbody id="listaFinanceiro"><tr><td colspan="4" style="color:var(--muted)">Sem lançamentos</td></tr></tbody>
-        </table>
-      </div>
-    </section>
-
-    <section id="config" class="section" aria-labelledby="tab-config">
-      <div class="card">
-        <h3>Configurações</h3>
-        <p>Personalize o Consultório L'amour Psique conforme sua preferência.</p>
-      </div>
+    <section id="relatorios" class="section">
+      <h2 style="margin:0 0 12px">Relatórios</h2>
+      <p style="color:var(--muted)">Em breve.</p>
     </section>
   </main>
 
-  <footer>
-    <div class="container">© <span id="year"></span> Consultório L'amour Psique</div>
+  <footer id="appFooter" style="display:none">
+    <div class="container">© 2025 L'amour Psique. Todos os direitos reservados.</div>
   </footer>
 
-  <script src="script.js"></script>
   <script>
-    // Atualiza ano no rodapé
-    document.getElementById('year').textContent = new Date().getFullYear();
-
-    // Tabs simples
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        btn.classList.add('active');
-        const target = document.querySelector(btn.dataset.target);
-        if (target) target.classList.add('active');
-      });
+    document.addEventListener('click', (e)=>{
+      const btn = e.target.closest('.tab-btn');
+      if(!btn) return;
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const tab = btn.dataset.tab;
+      document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+      document.getElementById(tab).classList.add('active');
     });
 
-    // Form de cadastro: envia evento personalizado para script.js consumir
-    const regForm = document.getElementById('register-form');
-    if (regForm) {
-      regForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const payload = {
-          nome: document.getElementById('reg-nome').value.trim(),
-          email: document.getElementById('reg-email').value.trim(),
-          senha: document.getElementById('reg-senha').value
-        };
-        // Dispara evento global para ser capturado pelo script.js
-        const evt = new CustomEvent('register:user', { detail: payload });
-        window.dispatchEvent(evt);
-        // Feedback simples
-        regForm.reset();
-        alert('Usuário cadastrado!');
-      });
+    async function login(username, password){
+      try{
+        const res = await fetch('/api/auth/login',{
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ username, password })
+        });
+        if(!res.ok){ throw new Error('Credenciais inválidas'); }
+        const data = await res.json().catch(()=>({}));
+        return { ok:true, data };
+      }catch(err){
+        return { ok:false, error: err.message || 'Falha ao autenticar' };
+      }
     }
-  </script>
-</body>
-</html>
+
+    const loginForm = document.getElementById('loginForm');
+    const loginError = document.getElementById('loginError');
+    loginForm.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      loginError.classList.add('hidden');
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const result = await login(username, password);
+      if(result.ok){
+        document.getElementById('loginScreen').style.display='none';
+        document.getElementById('appHeader').style.display='block';
+        document.getElementById('appMain').style.display='block';
+        document.getElementById('appFooter').style.display='block';
+        sessionStorage.setItem('auth','1');
+      }else{
+        loginError.textContent = 'Usuário ou senha inválidos.';
+        loginError.classList.remove('hidden');
+      }
+    });
+
+    if(sessionStorage.getItem('auth')==='1'){
+      document.getElementById('loginScreen').style.display='none';
+      document.getElementById('appHeader').style.display='block';
+      document.getElementById('appMain').style.display='block';
+      document.getElementById('appFooter').style.display='block';
+    }
+
+    const pacienteForm = document.getElementById('pacienteForm');
+    const pacientesTableBody = document.querySelector('#pacientesTable tbody');
+    let pacientes = JSON.parse(localStorage.getItem('pacientes')||'[]');
+
+    function renderPacientes(){
+      pacientesTableBody.innerHTML = pacientes.map(p=>`<tr><td>${p.nome}</td><td>${p.cpf||''}</td><td>${p.nascimento||''}</td><td>${p.telefone||''}</td><td>${p.email||''}</td></tr>`).join('');
+      document.getElementById('metricPacientes').textContent = pacientes.length;
+    }
+
+    renderPacientes();
+
+    pacienteForm.addEventListener('submit',(e)=>{
+      e.preventDefault();
+      const novo = {
+        nome: document.getElementById('nome').value.trim(),
+        cpf: document.getElementById('cpf').value.trim(),
+        nascimento: document.getElementById('nascimento').value,
+        telefone: document.getElementById('telefone').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        observacoes: document.getElementById('observacoes').value.trim()
+      };
+      if(!novo.nome){ return; }
+      pacientes.push(novo
