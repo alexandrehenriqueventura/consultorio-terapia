@@ -1,0 +1,14 @@
+:root {
+    --primary: #06b6d4;
+    --primary-dark: #0891b2;
+    --secondary: #64748b;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --light: #f8fafc;
+    --dark: #1e293b;
+    --border: #e2e8f0;
+    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --border-radius: 8px;
+}
+/* ... resto do CSS moderno e responsivo do dashboard e formulários ... */
