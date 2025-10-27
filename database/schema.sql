@@ -1,0 +1,2 @@
+-- Biblioteca completa do banco conforme exemplos anteriores.
+-- Inclui tabelas de pacientes, pagamentos, consultas, observacoes_clinicas.
