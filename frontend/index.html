@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Consultório Terapia - Sistema de Gerenciamento</title>
+  <title>Consultório L'amour Psique - Sistema de Gerenciamento</title>
   <meta name="description" content="Sistema moderno para gerenciamento de pacientes e consultas de consultório de terapia" />
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/2.0.0/modern-normalize.min.css" />
@@ -64,89 +64,64 @@
 <body>
   <header class="header">
     <div class="container header-inner">
-      <div class="logo">
-        <i class="fa-solid fa-heart-pulse"></i>
-        <h1>Consultório Terapia</h1>
-      </div>
-      <nav class="nav-menu" role="tablist" aria-label="Navegação">
-        <button id="tab-login" class="tab-btn active" data-target="login" type="button"><i class="fa-solid fa-right-to-bracket"></i> Login</button>
-        <button id="tab-pacientes" class="tab-btn" data-target="pacientes" type="button"><i class="fa-solid fa-users"></i> Pacientes</button>
-        <button id="tab-consultas" class="tab-btn" data-target="consultas" type="button"><i class="fa-solid fa-calendar-check"></i> Consultas</button>
-        <button id="tab-financeiro" class="tab-btn" data-target="financeiro" type="button"><i class="fa-solid fa-sack-dollar"></i> Financeiro</button>
+      <a class="logo" href="#">
+        <i class="fa-solid fa-heart"></i>
+        <h1>Consultório L'amour Psique</h1>
+      </a>
+      <nav class="nav-menu" role="tablist">
+        <button class="tab-btn active" id="tab-pacientes" data-target="#pacientes"><i class="fa-solid fa-users"></i> Pacientes</button>
+        <button class="tab-btn" id="tab-consultas" data-target="#consultas"><i class="fa-solid fa-calendar-check"></i> Consultas</button>
+        <button class="tab-btn" id="tab-financeiro" data-target="#financeiro"><i class="fa-solid fa-sack-dollar"></i> Financeiro</button>
+        <button class="tab-btn" id="tab-config" data-target="#config"><i class="fa-solid fa-gear"></i> Configurações</button>
       </nav>
     </div>
   </header>
 
   <main class="container">
-    <!-- Login -->
-    <section id="login" class="section active" aria-labelledby="tab-login">
-      <div id="login-container" class="card">
-        <h3>Acesso</h3>
-        <form id="login-form">
+    <!-- Seções existentes do app (placeholders mínimos para manter IDs usados no JS) -->
+    <section id="pacientes" class="section active" aria-labelledby="tab-pacientes">
+      <div class="card">
+        <h3>Resumo de Pacientes</h3>
+        <div class="row">
+          <div class="field">
+            <label for="busca-paciente">Buscar paciente</label>
+            <input id="busca-paciente" class="input" type="text" placeholder="Nome, email..." />
+          </div>
+        </div>
+        <div id="listaPacientes"></div>
+      </div>
+
+      <!-- Formulário de cadastro de usuário -->
+      <div class="card">
+        <h3>Cadastro de Usuário</h3>
+        <form id="register-form" class="grid" autocomplete="on">
           <div class="row">
             <div class="field">
-              <label for="login-email">E-mail</label>
-              <input id="login-email" name="email" class="input" type="email" placeholder="seu@email.com" required />
+              <label for="reg-nome">Nome</label>
+              <input id="reg-nome" name="nome" class="input" type="text" placeholder="Seu nome" required />
             </div>
             <div class="field">
-              <label for="login-senha">Senha</label>
-              <input id="login-senha" name="senha" class="input" type="password" placeholder="••••••" required />
+              <label for="reg-email">Email</label>
+              <input id="reg-email" name="email" class="input" type="email" placeholder="seu@email.com" required />
+            </div>
+            <div class="field">
+              <label for="reg-senha">Senha</label>
+              <input id="reg-senha" name="senha" class="input" type="password" placeholder="••••••••" minlength="6" required />
             </div>
           </div>
-          <div class="row" style="justify-content:flex-end">
-            <button type="submit" class="btn primary"><i class="fa-solid fa-right-to-bracket"></i> Entrar</button>
+          <div class="row" style="justify-content:flex-end; gap:8px">
+            <button type="reset" class="btn"><i class="fa-solid fa-eraser"></i> Limpar</button>
+            <button type="submit" class="btn primary"><i class="fa-solid fa-user-plus"></i> Cadastrar</button>
           </div>
         </form>
       </div>
     </section>
 
-    <!-- App container -->
-    <section id="app-container" class="section" aria-labelledby="tab-pacientes">
-      <!-- Pacientes -->
-      <div class="card">
-        <h3>Cadastro de Paciente</h3>
-        <form id="form-paciente">
-          <div class="row">
-            <div class="field">
-              <label for="paciente-nome">Nome</label>
-              <input id="paciente-nome" name="nome" class="input" type="text" placeholder="Nome completo" required />
-            </div>
-            <div class="field">
-              <label for="paciente-email">E-mail</label>
-              <input id="paciente-email" name="email" class="input" type="email" placeholder="email@exemplo.com" />
-            </div>
-            <div class="field">
-              <label for="paciente-telefone">Telefone</label>
-              <input id="paciente-telefone" name="telefone" class="input" type="tel" placeholder="(00) 00000-0000" />
-            </div>
-          </div>
-          <div class="row">
-            <div class="field">
-              <label for="paciente-notas">Anotações</label>
-              <textarea id="paciente-notas" name="notas" placeholder="Observações relevantes"></textarea>
-            </div>
-          </div>
-          <div class="row" style="justify-content:flex-end; gap:8px">
-            <button id="btn-salvar-paciente" type="submit" class="btn primary"><i class="fa-solid fa-floppy-disk"></i> Salvar</button>
-            <button id="btn-limpar-paciente" type="reset" class="btn"><i class="fa-solid fa-eraser"></i> Limpar</button>
-          </div>
-        </form>
-      </div>
-
-      <div class="card">
-        <h3>Pacientes</h3>
-        <div id="listaPacientes"></div>
-      </div>
-
-      <!-- Consultas -->
+    <section id="consultas" class="section" aria-labelledby="tab-consultas">
       <div class="card">
         <h3>Agendar Consulta</h3>
-        <form id="form-consulta">
+        <form id="form-consulta" class="grid">
           <div class="row">
-            <div class="field">
-              <label for="consulta-paciente">Paciente</label>
-              <select id="consulta-paciente" name="paciente" required></select>
-            </div>
             <div class="field">
               <label for="consulta-data">Data</label>
               <input id="consulta-data" name="data" class="input" type="date" required />
@@ -166,48 +141,74 @@
           </div>
         </form>
       </div>
-
       <div class="card">
         <h3>Consultas</h3>
         <div id="listaConsultas"></div>
       </div>
+    </section>
 
-      <!-- Financeiro resumo e lista -->
-      <section id="financeiro" class="section" aria-labelledby="tab-financeiro">
-        <div class="grid cards">
-          <div class="card">
-            <h3>Receitas (mês)</h3>
-            <div id="vReceitasMes" class="metric">R$ 0,00</div>
-          </div>
-          <div class="card">
-            <h3>Despesas (mês)</h3>
-            <div id="vDespesas" class="metric">R$ 0,00</div>
-          </div>
-          <div class="card">
-            <h3>Saldo</h3>
-            <div id="vSaldo" class="metric">R$ 0,00</div>
-          </div>
-          <div class="card">
-            <h3>Taxa de Adimplência</h3>
-            <div id="vAdimplencia" class="metric">0%</div>
-          </div>
-        </div>
-        <div class="card" style="margin-top:16px">
-          <h3>Movimentações recentes</h3>
-          <table class="table" aria-label="Movimentações">
-            <thead><tr><th>Data</th><th>Descrição</th><th>Tipo</th><th>Valor</th></tr></thead>
-            <tbody id="listaFinanceiro"><tr><td colspan="4" style="color:var(--muted)">Sem lançamentos</td></tr></tbody>
-          </table>
-        </div>
-      </section>
+    <section id="financeiro" class="section" aria-labelledby="tab-financeiro">
+      <div class="grid cards">
+        <div class="card"><h3>Receitas (mês)</h3><div id="vReceitasMes" class="metric">R$ 0,00</div></div>
+        <div class="card"><h3>Despesas (mês)</h3><div id="vDespesas" class="metric">R$ 0,00</div></div>
+        <div class="card"><h3>Saldo</h3><div id="vSaldo" class="metric">R$ 0,00</div></div>
+        <div class="card"><h3>Taxa de Adimplência</h3><div id="vAdimplencia" class="metric">0%</div></div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <h3>Movimentações recentes</h3>
+        <table class="table" aria-label="Movimentações">
+          <thead><tr><th>Data</th><th>Descrição</th><th>Tipo</th><th>Valor</th></tr></thead>
+          <tbody id="listaFinanceiro"><tr><td colspan="4" style="color:var(--muted)">Sem lançamentos</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="config" class="section" aria-labelledby="tab-config">
+      <div class="card">
+        <h3>Configurações</h3>
+        <p>Personalize o Consultório L'amour Psique conforme sua preferência.</p>
+      </div>
     </section>
   </main>
 
-  <div id="message-container" aria-live="polite"></div>
   <footer>
-    <div class="container">© Consultório Terapia</div>
+    <div class="container">© <span id="year"></span> Consultório L'amour Psique</div>
   </footer>
 
-  <script src="js/script.js"></script>
+  <script src="script.js"></script>
+  <script>
+    // Atualiza ano no rodapé
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Tabs simples
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        btn.classList.add('active');
+        const target = document.querySelector(btn.dataset.target);
+        if (target) target.classList.add('active');
+      });
+    });
+
+    // Form de cadastro: envia evento personalizado para script.js consumir
+    const regForm = document.getElementById('register-form');
+    if (regForm) {
+      regForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const payload = {
+          nome: document.getElementById('reg-nome').value.trim(),
+          email: document.getElementById('reg-email').value.trim(),
+          senha: document.getElementById('reg-senha').value
+        };
+        // Dispara evento global para ser capturado pelo script.js
+        const evt = new CustomEvent('register:user', { detail: payload });
+        window.dispatchEvent(evt);
+        // Feedback simples
+        regForm.reset();
+        alert('Usuário cadastrado!');
+      });
+    }
+  </script>
 </body>
 </html>
