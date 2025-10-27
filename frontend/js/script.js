@@ -1,14 +1,222 @@
-// Exemplo SPA JS básico para Dashboard e navegação
-// Implementa cadastro e listagem de pacientes
+// ==========================================
+// SISTEMA DE AUTENTICAÇÃO E SPA
+// ==========================================
+
+// Configuração da API
+const API_BASE_URL = '/api';
+
+// Gerenciamento de Token JWT
+const TokenManager = {
+  get: () => localStorage.getItem('authToken'),
+  set: (token) => localStorage.setItem('authToken', token),
+  remove: () => localStorage.removeItem('authToken'),
+  isValid: () => !!TokenManager.get()
+};
+
+// ==========================================
+// INICIALIZAÇÃO DA APLICAÇÃO
+// ==========================================
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Inicialização
+  // Verificar autenticação ao carregar a página
+  checkAuthentication();
+});
+
+// ==========================================
+// SISTEMA DE AUTENTICAÇÃO
+// ==========================================
+
+function checkAuthentication() {
+  const token = TokenManager.get();
+  
+  if (!token) {
+    // Usuário não autenticado - mostrar tela de login
+    showLoginScreen();
+    return;
+  }
+  
+  // Verificar se o token é válido
+  verifyToken()
+    .then(isValid => {
+      if (isValid) {
+        // Token válido - inicializar aplicação
+        initializeApp();
+      } else {
+        // Token inválido - mostrar tela de login
+        TokenManager.remove();
+        showLoginScreen();
+      }
+    })
+    .catch(() => {
+      // Erro na verificação - mostrar tela de login
+      TokenManager.remove();
+      showLoginScreen();
+    });
+}
+
+function showLoginScreen() {
+  // Ocultar toda a aplicação
+  const appContainer = document.getElementById('app-container');
+  const loginContainer = document.getElementById('login-container');
+  
+  if (appContainer) appContainer.style.display = 'none';
+  if (loginContainer) loginContainer.style.display = 'flex';
+  
+  // Configurar formulário de login
+  setupLoginForm();
+}
+
+function showAppScreen() {
+  // Mostrar a aplicação e ocultar login
+  const appContainer = document.getElementById('app-container');
+  const loginContainer = document.getElementById('login-container');
+  
+  if (appContainer) appContainer.style.display = 'block';
+  if (loginContainer) loginContainer.style.display = 'none';
+}
+
+function setupLoginForm() {
+  const loginForm = document.getElementById('login-form');
+  if (!loginForm) return;
+  
+  // Remover listeners anteriores (se existirem)
+  const newForm = loginForm.cloneNode(true);
+  loginForm.parentNode.replaceChild(newForm, loginForm);
+  
+  newForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    await handleLogin(e);
+  });
+}
+
+async function handleLogin(e) {
+  const form = e.target;
+  const email = form.querySelector('[name="email"]')?.value;
+  const password = form.querySelector('[name="password"]')?.value;
+  const loginButton = form.querySelector('button[type="submit"]');
+  const errorMessage = document.getElementById('login-error');
+  
+  // Limpar mensagem de erro
+  if (errorMessage) errorMessage.style.display = 'none';
+  
+  // Validação básica
+  if (!email || !password) {
+    showLoginError('Por favor, preencha todos os campos');
+    return;
+  }
+  
+  // Desabilitar botão durante o login
+  if (loginButton) {
+    loginButton.disabled = true;
+    loginButton.textContent = 'Entrando...';
+  }
+  
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, password })
+    });
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.message || 'Erro ao fazer login');
+    }
+    
+    // Salvar token
+    TokenManager.set(data.token);
+    
+    // Inicializar aplicação
+    initializeApp();
+    
+  } catch (error) {
+    console.error('Erro no login:', error);
+    showLoginError(error.message || 'Erro ao fazer login. Verifique suas credenciais.');
+  } finally {
+    // Reabilitar botão
+    if (loginButton) {
+      loginButton.disabled = false;
+      loginButton.textContent = 'Entrar';
+    }
+  }
+}
+
+function showLoginError(message) {
+  const errorElement = document.getElementById('login-error');
+  if (errorElement) {
+    errorElement.textContent = message;
+    errorElement.style.display = 'block';
+  } else {
+    alert(message);
+  }
+}
+
+async function verifyToken() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/verify`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${TokenManager.get()}`
+      }
+    });
+    
+    return response.ok;
+  } catch (error) {
+    console.error('Erro ao verificar token:', error);
+    return false;
+  }
+}
+
+function logout() {
+  // Remover token
+  TokenManager.remove();
+  
+  // Mostrar tela de login
+  showLoginScreen();
+  
+  // Limpar dados da sessão
+  showMessage('Logout realizado com sucesso', 'success');
+}
+
+// ==========================================
+// INICIALIZAÇÃO DA APLICAÇÃO
+// ==========================================
+
+function initializeApp() {
+  // Mostrar interface da aplicação
+  showAppScreen();
+  
+  // Inicializar componentes
   initNavigation();
   loadPacientes();
   setupFormPacientes();
-});
+  setupLogoutButton();
+  
+  // Mostrar tab inicial (dashboard)
+  showTab('dashboard');
+}
 
-// Navegação SPA
+function setupLogoutButton() {
+  const logoutBtn = document.getElementById('logout-btn');
+  if (logoutBtn) {
+    // Remover listener anterior se existir
+    const newBtn = logoutBtn.cloneNode(true);
+    logoutBtn.parentNode.replaceChild(newBtn, logoutBtn);
+    
+    newBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      logout();
+    });
+  }
+}
+
+// ==========================================
+// NAVEGAÇÃO SPA
+// ==========================================
+
 function initNavigation() {
   // Gerenciar navegação entre abas
   document.querySelectorAll('[data-tab]').forEach(tab => {
@@ -39,10 +247,22 @@ function showTab(tabName) {
   document.querySelector(`[data-tab="${tabName}"]`)?.classList.add('active');
 }
 
-// Carregar e listar pacientes (GET /api/pacientes)
+// ==========================================
+// GERENCIAMENTO DE PACIENTES
+// ==========================================
+
 function loadPacientes() {
-  fetch('/api/pacientes')
+  fetch(`${API_BASE_URL}/pacientes`, {
+    headers: {
+      'Authorization': `Bearer ${TokenManager.get()}`
+    }
+  })
     .then(res => {
+      if (res.status === 401) {
+        // Token inválido ou expirado
+        logout();
+        throw new Error('Sessão expirada');
+      }
       if (!res.ok) {
         throw new Error('Erro ao carregar pacientes');
       }
@@ -53,11 +273,12 @@ function loadPacientes() {
     })
     .catch(error => {
       console.error('Erro ao carregar pacientes:', error);
-      showMessage('Erro ao carregar lista de pacientes', 'error');
+      if (error.message !== 'Sessão expirada') {
+        showMessage('Erro ao carregar lista de pacientes', 'error');
+      }
     });
 }
 
-// Renderizar lista de pacientes na interface
 function renderPacientesList(pacientes) {
   const listContainer = document.getElementById('pacientes-list');
   if (!listContainer) return;
@@ -93,7 +314,6 @@ function renderPacientesList(pacientes) {
   listContainer.innerHTML = html;
 }
 
-// Configurar formulário de cadastro de pacientes
 function setupFormPacientes() {
   const form = document.getElementById('form-paciente');
   if (!form) return;
@@ -104,7 +324,6 @@ function setupFormPacientes() {
   });
 }
 
-// Enviar formulário de cadastro (POST /api/pacientes)
 function submitPacienteForm() {
   const form = document.getElementById('form-paciente');
   if (!form) return;
@@ -126,15 +345,21 @@ function submitPacienteForm() {
     return;
   }
   
-  // Enviar dados para API
-  fetch('/api/pacientes', {
+  // Enviar dados para API com token JWT
+  fetch(`${API_BASE_URL}/pacientes`, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${TokenManager.get()}`
     },
     body: JSON.stringify(formData)
   })
     .then(res => {
+      if (res.status === 401) {
+        // Token inválido ou expirado
+        logout();
+        throw new Error('Sessão expirada');
+      }
       if (!res.ok) {
         throw new Error('Erro ao cadastrar paciente');
       }
@@ -148,11 +373,16 @@ function submitPacienteForm() {
     })
     .catch(error => {
       console.error('Erro ao cadastrar paciente:', error);
-      showMessage('Erro ao cadastrar paciente. Tente novamente.', 'error');
+      if (error.message !== 'Sessão expirada') {
+        showMessage('Erro ao cadastrar paciente. Tente novamente.', 'error');
+      }
     });
 }
 
-// Função auxiliar para exibir mensagens
+// ==========================================
+// FUNÇÕES AUXILIARES
+// ==========================================
+
 function showMessage(message, type) {
   const messageContainer = document.getElementById('message-container');
   if (!messageContainer) {
@@ -169,7 +399,6 @@ function showMessage(message, type) {
   }, 3000);
 }
 
-// Função auxiliar para escapar HTML e prevenir XSS
 function escapeHtml(text) {
   const map = {
     '&': '&amp;',
