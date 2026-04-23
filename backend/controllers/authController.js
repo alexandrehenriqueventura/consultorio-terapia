@@ -1,53 +1,50 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
-// Generate JWT Token
+// Gerar token JWT
 const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET || 'your-secret-key', {
     expiresIn: '30d'
   });
 };
 
-// Login controller
+// Login
 exports.login = async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    // Validate input
     if (!username || !password) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         success: false,
-        message: 'Por favor, forneça nome de usuário e senha' 
+        message: 'Por favor, forneça nome de usuário e senha'
       });
     }
 
-    // Find user
-    const user = await User.findOne({ username });
+    // Buscar usuário no PostgreSQL
+    const user = await User.findByUsername(username);
     if (!user) {
-      return res.status(401).json({ 
+      return res.status(401).json({
         success: false,
-        message: 'Credenciais inválidas' 
+        message: 'Credenciais inválidas'
       });
     }
 
-    // Check password
-    const isPasswordValid = await user.comparePassword(password);
+    // Comparar senha com hash
+    const isPasswordValid = await User.comparePassword(password, user.password);
     if (!isPasswordValid) {
-      return res.status(401).json({ 
+      return res.status(401).json({
         success: false,
-        message: 'Credenciais inválidas' 
+        message: 'Credenciais inválidas'
       });
     }
 
-    // Generate token
-    const token = generateToken(user._id);
-
+    const token = generateToken(user.id);
     res.status(200).json({
       success: true,
       message: 'Login realizado com sucesso',
       token,
       user: {
-        id: user._id,
+        id: user.id,
         username: user.username,
         email: user.email,
         role: user.role
@@ -55,76 +52,64 @@ exports.login = async (req, res) => {
     });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'Erro ao realizar login' 
+      message: 'Erro ao realizar login'
     });
   }
 };
 
-// Register controller (optional, for creating users)
+// Registro
 exports.register = async (req, res) => {
   try {
     const { username, email, password, role } = req.body;
 
-    // Validate input
     if (!username || !email || !password) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         success: false,
-        message: 'Por favor, forneça todos os campos obrigatórios' 
+        message: 'Por favor, forneça todos os campos obrigatórios'
       });
     }
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+    // Verificar duplicidade no PostgreSQL
+    const existingUser = await User.findByUsernameOrEmail(username, email);
     if (existingUser) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         success: false,
-        message: 'Usuário ou email já cadastrado' 
+        message: 'Usuário ou email já cadastrado'
       });
     }
 
-    // Create new user
-    const user = new User({
-      username,
-      email,
-      password,
-      role: role || 'user'
-    });
-
-    await user.save();
-
-    // Generate token
-    const token = generateToken(user._id);
+    const newUser = await User.create({ username, email, password, role: role || 'user' });
+    const token = generateToken(newUser.id);
 
     res.status(201).json({
       success: true,
       message: 'Usuário registrado com sucesso',
       token,
       user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        role: user.role
+        id: newUser.id,
+        username: newUser.username,
+        email: newUser.email,
+        role: newUser.role
       }
     });
   } catch (error) {
     console.error('Register error:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'Erro ao registrar usuário' 
+      message: 'Erro ao registrar usuário'
     });
   }
 };
 
-// Verify token
+// Verificar token (rota protegida)
 exports.verifyToken = async (req, res) => {
   try {
-    // User is already attached to req by auth middleware
     res.status(200).json({
       success: true,
       user: {
-        id: req.user._id,
+        id: req.user.id,
         username: req.user.username,
         email: req.user.email,
         role: req.user.role
@@ -132,9 +117,30 @@ exports.verifyToken = async (req, res) => {
     });
   } catch (error) {
     console.error('Verify token error:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'Erro ao verificar token' 
+      message: 'Erro ao verificar token'
+    });
+  }
+};
+
+// Obter usuário atual (rota protegida)
+exports.getCurrentUser = async (req, res) => {
+  try {
+    res.status(200).json({
+      success: true,
+      user: {
+        id: req.user.id,
+        username: req.user.username,
+        email: req.user.email,
+        role: req.user.role
+      }
+    });
+  } catch (error) {
+    console.error('Get current user error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro ao buscar usuário'
     });
   }
 };
