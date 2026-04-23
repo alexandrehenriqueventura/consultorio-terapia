@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const pacienteController = require('../controllers/pacienteController');
+const authMiddleware = require('../middleware/authMiddleware');
 
-// Rotas REST para Pacientes
+// Todas as rotas de pacientes requerem autenticação
+router.use(authMiddleware);
 
 // POST /api/pacientes - Criar novo paciente
 router.post('/', pacienteController.create);
