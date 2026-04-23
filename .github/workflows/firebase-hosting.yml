@@ -5,7 +5,9 @@ on:
     branches:
       - main
 
-fix: usar gcloud SDK com access token para Firebase deploy  deploy:
+
+jobs:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
