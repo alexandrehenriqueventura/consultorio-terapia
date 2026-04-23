@@ -1,411 +1,169 @@
-// ==========================================
-// SISTEMA DE AUTENTICAÇÃO E SPA
-// ==========================================
+// ============================================
+// SISTEMA DE GERENCIAMENTO - FIREBASE FIRESTORE
+// ============================================
 
-// Configuração da API
-const API_BASE_URL = '/api';
+import{collection,getDocs,addDoc,updateDoc,deleteDoc,doc,query,where,orderBy,getDoc}from'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js';
 
-// Gerenciamento de Token JWT
-const TokenManager = {
-  get: () => localStorage.getItem('authToken'),
-  set: (token) => localStorage.setItem('authToken', token),
-  remove: () => localStorage.removeItem('authToken'),
-  isValid: () => !!TokenManager.get()
+let currentUser=null;
+let pacientesData=[];
+let consultasData=[];
+
+// ============================================
+// INICIALIZACAO
+// ============================================
+
+window.loadApp=async function(){
+  currentUser=window.auth.currentUser;
+  if(!currentUser)return;
+  
+  // Verificar role admin
+  const userDoc=await getDoc(doc(window.db,'users',currentUser.uid));
+  if(!userDoc.exists()||userDoc.data().role!=='admin'){
+    alert('⚠️ Acesso negado - somente administradores');
+    window.auth.signOut();
+    return;
+  }
+  
+  setupTabs();
+  await loadPacientes();
+  await loadConsultas();
+  updateDashboard();
 };
 
-// ==========================================
-// INICIALIZAÇÃO DA APLICAÇÃO
-// ==========================================
+// ============================================
+// SISTEMA DE TABS
+// ============================================
 
-document.addEventListener('DOMContentLoaded', function() {
-  // Verificar autenticação ao carregar a página
-  checkAuthentication();
-});
-
-// ==========================================
-// SISTEMA DE AUTENTICAÇÃO
-// ==========================================
-
-function checkAuthentication() {
-  const token = TokenManager.get();
+function setupTabs(){
+  document.querySelectorAll('.tab-btn[data-tab]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(t=>t.style.display='none');
+      document.getElementById(btn.dataset.tab+'-tab').style.display='block';
+    });
+  });
   
-  if (!token) {
-    // Usuário não autenticado - mostrar tela de login
-    showLoginScreen();
+  document.getElementById('add-paciente-btn').addEventListener('click',showAddPacienteModal);
+}
+
+// ============================================
+// PACIENTES - CRUD FIRESTORE
+// ============================================
+
+async function loadPacientes(){
+  const q=query(collection(window.db,'pacientes'),where('ativo','==',true),orderBy('nome','asc'));
+  const snapshot=await getDocs(q);
+  pacientesData=snapshot.docs.map(d=>({id:d.id,...d.data()}));
+  renderPacientes();
+}
+
+function renderPacientes(){
+  const container=document.getElementById('pacientes-list');
+  if(pacientesData.length===0){
+    container.innerHTML='<p style="color:var(--muted);text-align:center;padding:40px">Nenhum paciente cadastrado</p>';
     return;
   }
-  
-  // Verificar se o token é válido
-  verifyToken()
-    .then(isValid => {
-      if (isValid) {
-        // Token válido - inicializar aplicação
-        initializeApp();
-      } else {
-        // Token inválido - mostrar tela de login
-        TokenManager.remove();
-        showLoginScreen();
-      }
-    })
-    .catch(() => {
-      // Erro na verificação - mostrar tela de login
-      TokenManager.remove();
-      showLoginScreen();
-    });
+  container.innerHTML=pacientesData.map(p=>`
+    <div class="card" style="margin-bottom:12px;display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <h3 style="margin:0 0 4px;font-size:16px;color:#fff">${p.nome}</h3>
+        <p style="margin:0;font-size:13px;color:var(--muted)">${p.telefone||'Sem telefone'} • ${p.email||'Sem email'}</p>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button onclick="editPaciente('${p.id}')" class="btn-primary" style="width:auto;padding:8px 16px;background:var(--primary)"><i class="fas fa-edit"></i> Editar</button>
+        <button onclick="deletePaciente('${p.id}')" class="btn-primary" style="width:auto;padding:8px 16px;background:var(--danger)"><i class="fas fa-trash"></i> Excluir</button>
+      </div>
+    </div>
+  `).join('');
 }
 
-function showLoginScreen() {
-  // Ocultar toda a aplicação
-  const appContainer = document.getElementById('app-container');
-  const loginContainer = document.getElementById('login-container');
-  
-  if (appContainer) appContainer.style.display = 'none';
-  if (loginContainer) loginContainer.style.display = 'flex';
-  
-  // Configurar formulário de login
-  setupLoginForm();
+window.editPaciente=async function(id){
+  const paciente=pacientesData.find(p=>p.id===id);
+  if(!paciente)return;
+  const nome=prompt('Nome do paciente:',paciente.nome);
+  if(!nome)return;
+  const telefone=prompt('Telefone:',paciente.telefone||'');
+  const email=prompt('Email:',paciente.email||'');
+  await updateDoc(doc(window.db,'pacientes',id),{nome,telefone,email});
+  await loadPacientes();
+  updateDashboard();
+};
+
+window.deletePaciente=async function(id){
+  if(!confirm('Excluir este paciente?'))return;
+  await updateDoc(doc(window.db,'pacientes',id),{ativo:false});
+  await loadPacientes();
+  updateDashboard();
+};
+
+function showAddPacienteModal(){
+  const nome=prompt('Nome do paciente:');
+  if(!nome)return;
+  const telefone=prompt('Telefone:');
+  const email=prompt('Email:');
+  addPaciente({nome,telefone,email,ativo:true,dataCadastro:new Date()});
 }
 
-function showAppScreen() {
-  // Mostrar a aplicação e ocultar login
-  const appContainer = document.getElementById('app-container');
-  const loginContainer = document.getElementById('login-container');
-  
-  if (appContainer) appContainer.style.display = 'block';
-  if (loginContainer) loginContainer.style.display = 'none';
+async function addPaciente(data){
+  await addDoc(collection(window.db,'pacientes'),data);
+  await loadPacientes();
+  updateDashboard();
 }
 
-function setupLoginForm() {
-  const loginForm = document.getElementById('login-form');
-  if (!loginForm) return;
-  
-  // Remover listeners anteriores (se existirem)
-  const newForm = loginForm.cloneNode(true);
-  loginForm.parentNode.replaceChild(newForm, loginForm);
-  
-  newForm.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    await handleLogin(e);
-  });
+// ============================================
+// CONSULTAS - CRUD FIRESTORE
+// ============================================
+
+async function loadConsultas(){
+  const q=query(collection(window.db,'consultas'),orderBy('data','desc'));
+  const snapshot=await getDocs(q);
+  consultasData=snapshot.docs.map(d=>({id:d.id,...d.data()}));
+  renderConsultas();
 }
 
-async function handleLogin(e) {
-  const form = e.target;
-  const email = form.querySelector('[name="email"]')?.value;
-  const password = form.querySelector('[name="password"]')?.value;
-  const loginButton = form.querySelector('button[type="submit"]');
-  const errorMessage = document.getElementById('login-error');
-  
-  // Limpar mensagem de erro
-  if (errorMessage) errorMessage.style.display = 'none';
-  
-  // Validação básica
-  if (!email || !password) {
-    showLoginError('Por favor, preencha todos os campos');
+function renderConsultas(){
+  const container=document.getElementById('consultas-list');
+  if(consultasData.length===0){
+    container.innerHTML='<p style="color:var(--muted);text-align:center;padding:40px">Nenhuma consulta agendada</p>';
     return;
   }
-  
-  // Desabilitar botão durante o login
-  if (loginButton) {
-    loginButton.disabled = true;
-    loginButton.textContent = 'Entrando...';
-  }
-  
-  try {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ email, password })
-    });
-    
-    const data = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(data.message || 'Erro ao fazer login');
-    }
-    
-    // Salvar token
-    TokenManager.set(data.token);
-    
-    // Inicializar aplicação
-    initializeApp();
-    
-  } catch (error) {
-    console.error('Erro no login:', error);
-    showLoginError(error.message || 'Erro ao fazer login. Verifique suas credenciais.');
-  } finally {
-    // Reabilitar botão
-    if (loginButton) {
-      loginButton.disabled = false;
-      loginButton.textContent = 'Entrar';
-    }
-  }
+  container.innerHTML=consultasData.slice(0,20).map(c=>{
+    const paciente=pacientesData.find(p=>p.id===c.pacienteId)||{nome:'Paciente desconhecido'};
+    const isPago=c.pago===true;
+    return`
+    <div class="card" style="margin-bottom:12px;display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <h3 style="margin:0 0 4px;font-size:16px;color:#fff">${paciente.nome}</h3>
+        <p style="margin:0;font-size:13px;color:var(--muted)">${c.data?.toDate?c.data.toDate().toLocaleDateString('pt-BR'):c.data} • R$ ${c.valor||0}</p>
+      </div>
+      <div>
+        ${isPago?'<span style="color:var(--ok);font-weight:600">✓ Pago</span>':`<button onclick="marcarPago('${c.id}')" class="btn-primary" style="width:auto;padding:8px 16px">Marcar como Pago</button>`}
+      </div>
+    </div>
+  `}).join('');
 }
 
-function showLoginError(message) {
-  const errorElement = document.getElementById('login-error');
-  if (errorElement) {
-    errorElement.textContent = message;
-    errorElement.style.display = 'block';
-  } else {
-    alert(message);
-  }
-}
+window.marcarPago=async function(id){
+  await updateDoc(doc(window.db,'consultas',id),{pago:true});
+  await loadConsultas();
+  updateDashboard();
+};
 
-async function verifyToken() {
-  try {
-    const response = await fetch(`${API_BASE_URL}/auth/verify`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${TokenManager.get()}`
-      }
-    });
-    
-    return response.ok;
-  } catch (error) {
-    console.error('Erro ao verificar token:', error);
-    return false;
-  }
-}
+// ============================================
+// DASHBOARD - METRICAS
+// ============================================
 
-function logout() {
-  // Remover token
-  TokenManager.remove();
-  
-  // Mostrar tela de login
-  showLoginScreen();
-  
-  // Limpar dados da sessão
-  showMessage('Logout realizado com sucesso', 'success');
-}
-
-// ==========================================
-// INICIALIZAÇÃO DA APLICAÇÃO
-// ==========================================
-
-function initializeApp() {
-  // Mostrar interface da aplicação
-  showAppScreen();
-  
-  // Inicializar componentes
-  initNavigation();
-  loadPacientes();
-  setupFormPacientes();
-  setupLogoutButton();
-  
-  // Mostrar tab inicial (dashboard)
-  showTab('dashboard');
-}
-
-function setupLogoutButton() {
-  const logoutBtn = document.getElementById('logout-btn');
-  if (logoutBtn) {
-    // Remover listener anterior se existir
-    const newBtn = logoutBtn.cloneNode(true);
-    logoutBtn.parentNode.replaceChild(newBtn, logoutBtn);
-    
-    newBtn.addEventListener('click', function(e) {
-      e.preventDefault();
-      logout();
-    });
-  }
-}
-
-// ==========================================
-// NAVEGAÇÃO SPA
-// ==========================================
-
-function initNavigation() {
-  // Gerenciar navegação entre abas
-  document.querySelectorAll('[data-tab]').forEach(tab => {
-    tab.addEventListener('click', function(e) {
-      e.preventDefault();
-      const targetTab = this.dataset.tab;
-      showTab(targetTab);
-    });
+function updateDashboard(){
+  document.getElementById('total-pacientes').textContent=pacientesData.length;
+  const mesAtual=new Date().getMonth();
+  const consultasMes=consultasData.filter(c=>{
+    const d=c.data?.toDate?c.data.toDate():new Date(c.data);
+    return d.getMonth()===mesAtual;
   });
-}
-
-function showTab(tabName) {
-  // Ocultar todas as abas
-  document.querySelectorAll('.tab-content').forEach(content => {
-    content.classList.remove('active');
-  });
-  
-  // Mostrar aba selecionada
-  const targetContent = document.querySelector(`[data-content="${tabName}"]`);
-  if (targetContent) {
-    targetContent.classList.add('active');
-  }
-  
-  // Atualizar navegação ativa
-  document.querySelectorAll('[data-tab]').forEach(tab => {
-    tab.classList.remove('active');
-  });
-  document.querySelector(`[data-tab="${tabName}"]`)?.classList.add('active');
-}
-
-// ==========================================
-// GERENCIAMENTO DE PACIENTES
-// ==========================================
-
-function loadPacientes() {
-  fetch(`${API_BASE_URL}/pacientes`, {
-    headers: {
-      'Authorization': `Bearer ${TokenManager.get()}`
-    }
-  })
-    .then(res => {
-      if (res.status === 401) {
-        // Token inválido ou expirado
-        logout();
-        throw new Error('Sessão expirada');
-      }
-      if (!res.ok) {
-        throw new Error('Erro ao carregar pacientes');
-      }
-      return res.json();
-    })
-    .then(data => {
-      renderPacientesList(data);
-    })
-    .catch(error => {
-      console.error('Erro ao carregar pacientes:', error);
-      if (error.message !== 'Sessão expirada') {
-        showMessage('Erro ao carregar lista de pacientes', 'error');
-      }
-    });
-}
-
-function renderPacientesList(pacientes) {
-  const listContainer = document.getElementById('pacientes-list');
-  if (!listContainer) return;
-  
-  if (!pacientes || pacientes.length === 0) {
-    listContainer.innerHTML = '<p class="empty-message">Nenhum paciente cadastrado.</p>';
-    return;
-  }
-  
-  let html = '<table class="pacientes-table">';
-  html += '<thead><tr>';
-  html += '<th>Nome</th>';
-  html += '<th>CPF</th>';
-  html += '<th>Telefone</th>';
-  html += '<th>Email</th>';
-  html += '<th>Ações</th>';
-  html += '</tr></thead><tbody>';
-  
-  pacientes.forEach(paciente => {
-    html += '<tr>';
-    html += `<td>${escapeHtml(paciente.nome || '')}</td>`;
-    html += `<td>${escapeHtml(paciente.cpf || '')}</td>`;
-    html += `<td>${escapeHtml(paciente.telefone || '')}</td>`;
-    html += `<td>${escapeHtml(paciente.email || '')}</td>`;
-    html += '<td>';
-    html += `<button class="btn-edit" data-id="${paciente.id}">Editar</button> `;
-    html += `<button class="btn-delete" data-id="${paciente.id}">Excluir</button>`;
-    html += '</td>';
-    html += '</tr>';
-  });
-  
-  html += '</tbody></table>';
-  listContainer.innerHTML = html;
-}
-
-function setupFormPacientes() {
-  const form = document.getElementById('form-paciente');
-  if (!form) return;
-  
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    submitPacienteForm();
-  });
-}
-
-function submitPacienteForm() {
-  const form = document.getElementById('form-paciente');
-  if (!form) return;
-  
-  // Coletar dados do formulário
-  const formData = {
-    nome: form.querySelector('[name="nome"]')?.value,
-    cpf: form.querySelector('[name="cpf"]')?.value,
-    telefone: form.querySelector('[name="telefone"]')?.value,
-    email: form.querySelector('[name="email"]')?.value,
-    data_nascimento: form.querySelector('[name="data_nascimento"]')?.value,
-    endereco: form.querySelector('[name="endereco"]')?.value,
-    observacoes: form.querySelector('[name="observacoes"]')?.value
-  };
-  
-  // Validação básica
-  if (!formData.nome || !formData.cpf) {
-    showMessage('Nome e CPF são obrigatórios', 'error');
-    return;
-  }
-  
-  // Enviar dados para API com token JWT
-  fetch(`${API_BASE_URL}/pacientes`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${TokenManager.get()}`
-    },
-    body: JSON.stringify(formData)
-  })
-    .then(res => {
-      if (res.status === 401) {
-        // Token inválido ou expirado
-        logout();
-        throw new Error('Sessão expirada');
-      }
-      if (!res.ok) {
-        throw new Error('Erro ao cadastrar paciente');
-      }
-      return res.json();
-    })
-    .then(data => {
-      showMessage('Paciente cadastrado com sucesso!', 'success');
-      form.reset();
-      // Atualizar lista de pacientes automaticamente
-      loadPacientes();
-    })
-    .catch(error => {
-      console.error('Erro ao cadastrar paciente:', error);
-      if (error.message !== 'Sessão expirada') {
-        showMessage('Erro ao cadastrar paciente. Tente novamente.', 'error');
-      }
-    });
-}
-
-// ==========================================
-// FUNÇÕES AUXILIARES
-// ==========================================
-
-function showMessage(message, type) {
-  const messageContainer = document.getElementById('message-container');
-  if (!messageContainer) {
-    alert(message);
-    return;
-  }
-  
-  messageContainer.textContent = message;
-  messageContainer.className = `message ${type}`;
-  messageContainer.style.display = 'block';
-  
-  setTimeout(() => {
-    messageContainer.style.display = 'none';
-  }, 3000);
-}
-
-function escapeHtml(text) {
-  const map = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#039;'
-  };
-  return text.toString().replace(/[&<>"']/g, m => map[m]);
+  document.getElementById('total-consultas').textContent=consultasMes.length;
+  const pendentes=consultasMes.filter(c=>!c.pago).reduce((sum,c)=>sum+(c.valor||0),0);
+  const pagos=consultasMes.filter(c=>c.pago).reduce((sum,c)=>sum+(c.valor||0),0);
+  document.getElementById('receita-pendente').textContent='R$ '+pendentes.toFixed(2);
+  document.getElementById('pagos').textContent='R$ '+pagos.toFixed(2);
 }
