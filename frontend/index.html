@@ -1,245 +1,174 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Consultório L'amour Psique - Sistema de Gerenciamento</title>
-  <meta name="description" content="Sistema moderno para gerenciamento de pacientes e consultas de consultório de terapia" />
-  <link rel="manifest" href="/manifest.json" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/2.0.0/modern-normalize.min.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consultório L'amour Psique - Firebase</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/2.0.0/modern-normalize.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <style>
-    :root{ --bg:#0f172a; --panel:#111827; --muted:#94a3b8; --text:#e5e7eb; --primary:#22c55e; --primary-600:#16a34a; --ring:#334155; --card:#0b1220; --danger:#ef4444; --warning:#f59e0b; --ok:#22c55e; }
+    :root{--bg:#f7f2a;}--panel:#111827;--muted:#94a3b8;--text:#e5e7eb;--primary:#2c55e;--primary-600:#16a34a;--ring:#334155;--card:#0b1220;--danger:#ef4444;--warning:#f59e0b;--ok:#2c55e}
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{ margin:0; background:linear-gradient(180deg,#0b1220 0%, #0f172a 100%); color:var(--text); font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; }
-    a{color:inherit; text-decoration:none}
-    .container{max-width:1100px; margin:0 auto; padding:0 16px}
-    .header{position:sticky; top:0; z-index:20; backdrop-filter:saturate(1.2) blur(6px); background:rgba(2,6,23,.6); border-bottom:1px solid var(--ring)}
-    .header-inner{display:flex; align-items:center; justify-content:space-between; padding:14px 0}
-    .logo{display:flex; align-items:center; gap:10px}
+    body{margin:0;background:linear-gradient(180deg,#0b1220 0%,#0f172a 100%);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Arial,"Noto Sans";a{color:inherit;text-decoration:none}}
+    .container{max-width:1100px;margin:0 auto;padding:0 16px}
+    .header{position:sticky;top:0;z-index:20;background:rgba(2,6,23,.6);backdrop-filter:saturate(1.2)blur(6px);border-bottom:1px solid var(--ring)}
+    .header-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+    .logo{display:flex;align-items:center;gap:10px}
     .logo i{color:var(--primary)}
-    .logo h1{font-size:18px; letter-spacing:.3px; margin:0}
-    .nav-menu{display:flex; gap:8px; flex-wrap:wrap}
-    .tab-btn{appearance:none; border:1px solid var(--ring); background:#0b1323; color:var(--text); padding:10px 12px; border-radius:10px; display:flex; align-items:center; gap:8px; cursor:pointer; transition:.2s ease}
-    .tab-btn:hover{border-color:var(--primary); box-shadow:0 0 0 2px rgba(34,197,94,.15) inset}
-    .tab-btn.active{background:linear-gradient(180deg,#0f1a30, #0b1323); border-color:var(--primary); color:#ecfeff}
+    .nav-menu{display:flex;gap:8px;flex-wrap:wrap}
+    .tab-btn{appearance:none;border:1px solid var(--ring);background:#0b1323;color:var(--text);padding:10px 12px;border-radius:10px;display:flex;align-items:center;gap:8px;cursor:pointer;transition:.2s ease}
+    .tab-btn:hover{border-color:var(--primary);box-shadow:0 0 2px rgba(34,197,94,.15)inset}
+    .tab-btn.active{background:linear-gradient(180deg,#0bfa30,#0b1323);border-color:var(--primary);color:#ecfeff}
     main{padding:24px 0}
-    .grid{display:grid; gap:16px}
-    .cards{grid-template-columns: repeat(12, 1fr)}
-    .card{grid-column: span 12; background:linear-gradient(180deg,#0b1220,#0e1527); border:1px solid var(--ring); border-radius:14px; padding:16px}
-    .card h3{margin:4px 0 8px; font-size:14px; color:var(--muted); font-weight:600}
-    .metric{font-size:28px; font-weight:700}
-    .card .icon{width:40px; height:40px; display:grid; place-items:center; border-radius:10px; background:rgba(34,197,94,.08); color:var(--primary); border:1px solid rgba(34,197,94,.25)}
-    .section{display:none; animation:fade .25s ease}
-    .section.active{display:block}
-    @keyframes fade{from{opacity:.6; transform:translateY(4px)} to{opacity:1; transform:none}}
-    .table{width:100%; border-collapse:collapse; overflow:hidden; border-radius:12px; border:1px solid var(--ring)}
-    .table th,.table td{padding:12px 10px; text-align:left}
-    .table thead th{background:#0c1426; color:#cbd5e1; font-size:12px; letter-spacing:.4px; text-transform:uppercase}
-    .table tbody tr{border-top:1px solid var(--ring)}
-    .table tbody tr:hover{background:#0c1322}
-    .row{display:flex; gap:12px; flex-wrap:wrap}
-    .field{flex:1 1 220px; display:flex; flex-direction:column; gap:6px}
-    input, select, textarea{background:#0a1220; color:var(--text); border:1px solid var(--ring); border-radius:10px; padding:10px 12px}
-    textarea{min-height:92px}
-    .btn{appearance:none; border:1px solid var(--ring); background:#0b1323; color:var(--text); padding:10px 14px; border-radius:10px; cursor:pointer; transition:.2s}
-    .btn.primary{border-color:var(--primary); background:linear-gradient(180deg,#173a2a, #0b1323)}
-    .btn.primary:hover{box-shadow:0 0 0 2px rgba(34,197,94,.15) inset}
-    .btn.warn{border-color:var(--warning); color:#fde68a}
-    .btn.danger{border-color:var(--danger); color:#fecaca}
-    footer{margin:36px 0 10px; color:var(--muted); font-size:12px; text-align:center}
-    @media (min-width:640px){ .card{grid-column: span 6} }
-    @media (min-width:960px){ .card{grid-column: span 3} }
-    .login-backdrop{position:fixed; inset:0; display:grid; place-items:center; background:linear-gradient(180deg,#0b1220,#0f172a)}
-    .login-container{width:min(420px, 92vw); background:linear-gradient(180deg,#0b1220,#0e1527); border:1px solid var(--ring); border-radius:16px; padding:22px; box-shadow:0 6px 24px rgba(0,0,0,.35)}
-    .login-header{display:flex; align-items:center; gap:10px; margin-bottom:12px}
-    .error{color:#fecaca; font-size:12px; margin-top:8px}
-    .hidden{display:none !important}
+    .grid{display:grid;gap:16px}
+    .cards{grid-template-columns:repeat(12,1fr)}
+    .card{grid-column:span 12;background:linear-gradient(180deg,#0bfa30,#0e1527);border:1px solid var(--ring);border-radius:14px;padding:16px}
+    .card h3{margin:4px 0 8px;font-size:14px;color:var(--muted);font-weight:600}
+    .metric{font-size:28px;font-weight:700}
+    .card .icon{width:40px;height:40px;display:grid;place-items:center;border-radius:10px;background:rgba(34,197,94,.08);color:var(--primary)}
+    @keyframes fade{from{opacity:.6;transform:translateY(4px)}to{opacity:1;transform:none}}
+    #login-screen{display:grid;place-items:center;min-height:100vh;padding:20px}
+    .login-box{background:var(--card);border:1px solid var(--ring);border-radius:14px;padding:32px 24px;max-width:380px;width:100%;animation:fade .6s ease}
+    .login-box h2{margin:0 0 24px;font-size:24px}
+    .form-group{margin-bottom:16px}
+    .form-group label{display:block;margin-bottom:6px;font-size:13px;color:var(--muted)}
+    .form-group input{width:100%;padding:10px 12px;background:#020617;border:1px solid var(--ring);color:#fff;border-radius:8px;font-size:14px}
+    .form-group input:focus{outline:none;border-color:var(--primary)}
+    .btn-primary{width:100%;padding:12px;background:var(--primary);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:14px}
+    .btn-primary:hover{background:var(--primary-600)}
+    .error-msg{color:var(--danger);font-size:13px;margin-top:8px}
+    #app{display:none}
   </style>
 </head>
 <body>
-  <div id="loginScreen" class="login-backdrop">
-    <div class="login-container" id="login-container">
-      <div class="login-header">
-        <i class="fa-solid fa-user-shield"></i>
-        <h2 style="margin:0; font-size:18px">Acesso ao Sistema</h2>
-      </div>
-      <form id="loginForm">
-        <div class="field">
-          <label for="username">Usuário</label>
-          <input id="username" name="username" placeholder="Digite seu usuário" autocomplete="username" required />
+  <!-- Tela de Login -->
+  <div id="login-screen">
+    <div class="login-box">
+      <h2>⚡ Login - Firebase Auth</h2>
+      <form id="login-form">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="email" required autocomplete="email">
         </div>
-        <div class="field">
-          <label for="password">Senha</label>
-          <input id="password" name="password" type="password" placeholder="Digite sua senha" autocomplete="current-password" required />
+        <div class="form-group">
+          <label>Senha</label>
+          <input type="password" id="password" required autocomplete="current-password">
         </div>
-        <div class="row" style="justify-content:space-between; align-items:center">
-          <button type="submit" class="btn primary" style="flex:1">Entrar</button>
-        </div>
-        <div id="loginError" class="error hidden">Usuário ou senha inválidos.</div>
+        <button type="submit" class="btn-primary">Entrar</button>
+        <p id="login-error" class="error-msg"></p>
       </form>
     </div>
   </div>
 
-  <header class="header" id="appHeader" style="display:none">
-    <div class="container header-inner">
-      <div class="logo">
-        <i class="fa-solid fa-hand-holding-heart"></i>
-        <h1>L'amour Psique</h1>
+  <!-- App Principal (oculto até login) -->
+  <div id="app">
+    <header class="header">
+      <div class="container">
+        <div class="header-inner">
+          <div class="logo">
+            <i class="fas fa-brain"></i>
+            <h1 style="margin:0;font-size:18px">Consultório L'amour Psique</h1>
+          </div>
+          <nav class="nav-menu">
+            <button class="tab-btn active" data-tab="dashboard"><i class="fas fa-chart-line"></i>Dashboard</button>
+            <button class="tab-btn" data-tab="pacientes"><i class="fas fa-users"></i>Pacientes</button>
+            <button class="tab-btn" data-tab="consultas"><i class="fas fa-calendar"></i>Consultas</button>
+            <button id="logout-btn" class="tab-btn"><i class="fas fa-sign-out-alt"></i>Sair</button>
+          </nav>
+        </div>
       </div>
-      <nav class="nav-menu" id="tabs">
-        <button class="tab-btn active" data-tab="dashboard"><i class="fa-solid fa-gauge"></i> Dashboard</button>
-        <button class="tab-btn" data-tab="agenda"><i class="fa-regular fa-calendar"></i> Agenda</button>
-        <button class="tab-btn" data-tab="pacientes"><i class="fa-solid fa-user-plus"></i> Cadastro de Pacientes</button>
-        <button class="tab-btn" data-tab="relatorios"><i class="fa-solid fa-chart-simple"></i> Relatórios</button>
-      </nav>
-    </div>
-  </header>
+    </header>
 
-  <main class="container" id="appMain" style="display:none">
-    <section id="dashboard" class="section active">
-      <div class="grid cards">
-        <div class="card"><div class="icon"><i class="fa-solid fa-users"></i></div><h3>Pacientes</h3><div class="metric" id="metricPacientes">0</div></div>
-        <div class="card"><div class="icon"><i class="fa-regular fa-calendar"></i></div><h3>Consultas</h3><div class="metric">0</div></div>
-        <div class="card"><div class="icon"><i class="fa-solid fa-circle-check"></i></div><h3>Taxa de presença</h3><div class="metric">0%</div></div>
-        <div class="card"><div class="icon"><i class="fa-solid fa-triangle-exclamation"></i></div><h3>Alertas</h3><div class="metric">0</div></div>
+    <main class="container">
+      <!-- Dashboard -->
+      <div id="dashboard-tab" class="tab-content">
+        <div class="grid cards">
+          <div class="card" style="grid-column:span 3">
+            <div class="icon"><i class="fas fa-users"></i></div>
+            <h3>Total de Pacientes</h3>
+            <div class="metric" id="total-pacientes">0</div>
+          </div>
+          <div class="card" style="grid-column:span 3">
+            <div class="icon"><i class="fas fa-calendar-check"></i></div>
+            <h3>Consultas Este Mês</h3>
+            <div class="metric" id="total-consultas">0</div>
+          </div>
+          <div class="card" style="grid-column:span 3">
+            <div class="icon"><i class="fas fa-dollar-sign"></i></div>
+            <h3>Receita Pendente</h3>
+            <div class="metric" id="receita-pendente">R$ 0,00</div>
+          </div>
+          <div class="card" style="grid-column:span 3">
+            <div class="icon"><i class="fas fa-check-circle"></i></div>
+            <h3>Pagamentos Recebidos</h3>
+            <div class="metric" id="pagos">R$ 0,00</div>
+          </div>
+        </div>
       </div>
-    </section>
 
-    <section id="agenda" class="section">
-      <h2 style="margin:0 0 12px">Agenda</h2>
-      <p style="color:var(--muted)">Em breve.</p>
-    </section>
-
-    <section id="pacientes" class="section">
-      <h2 style="margin:0 0 12px">Cadastro de Pacientes</h2>
-      <form id="pacienteForm">
-        <div class="row">
-          <div class="field">
-            <label for="nome">Nome completo</label>
-            <input id="nome" name="nome" required />
-          </div>
-          <div class="field">
-            <label for="cpf">CPF</label>
-            <input id="cpf" name="cpf" placeholder="000.000.000-00" />
-          </div>
-          <div class="field">
-            <label for="nascimento">Data de nascimento</label>
-            <input id="nascimento" name="nascimento" type="date" />
-          </div>
+      <!-- Pacientes -->
+      <div id="pacientes-tab" class="tab-content" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <h2 style="margin:0">Gerenciar Pacientes</h2>
+          <button id="add-paciente-btn" class="btn-primary" style="width:auto;padding:10px 20px"><i class="fas fa-plus"></i> Novo Paciente</button>
         </div>
-        <div class="row">
-          <div class="field">
-            <label for="telefone">Telefone</label>
-            <input id="telefone" name="telefone" placeholder="(00) 00000-0000" />
-          </div>
-          <div class="field">
-            <label for="email">E-mail</label>
-            <input id="email" name="email" type="email" />
-          </div>
-        </div>
-        <div class="field">
-          <label for="observacoes">Observações</label>
-          <textarea id="observacoes" name="observacoes" placeholder="Histórico, alergias, preferências..."></textarea>
-        </div>
-        <div class="row" style="justify-content:flex-end">
-          <button type="reset" class="btn">Limpar</button>
-          <button type="submit" class="btn primary">Salvar paciente</button>
-        </div>
-      </form>
+        <div id="pacientes-list"></div>
+      </div>
 
-      <h3 style="margin-top:18px">Pacientes cadastrados</h3>
-      <table class="table" id="pacientesTable">
-        <thead>
-          <tr><th>Nome</th><th>CPF</th><th>Nascimento</th><th>Telefone</th><th>E-mail</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </section>
+      <!-- Consultas -->
+      <div id="consultas-tab" class="tab-content" style="display:none">
+        <h2>Consultas Agendadas</h2>
+        <div id="consultas-list"></div>
+      </div>
+    </main>
+  </div>
 
-    <section id="relatorios" class="section">
-      <h2 style="margin:0 0 12px">Relatórios</h2>
-      <p style="color:var(--muted)">Em breve.</p>
-    </section>
-  </main>
+  <!-- Firebase SDK -->
+  <script type="module">
+    import{initializeApp}from'https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js';
+    import{getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut}from'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
+    import{getFirestore}from'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js';
 
-  <footer id="appFooter" style="display:none">
-    <div class="container">© 2025 L'amour Psique. Todos os direitos reservados.</div>
-  </footer>
+    const firebaseConfig={apiKey:"AIzaSyAKmzWCQVr1WkUEfItaimjwkRoW18-Kc5M",authDomain:"consultorio-terapia.firebaseapp.com",projectId:"consultorio-terapia",storageBucket:"consultorio-terapia.firebasestorage.app",messagingSenderId:"592781807631",appId:"1:592781807631:web:38dab438e6bebbf854537a"};
 
-  <script>
-    document.addEventListener('click', (e)=>{
-      const btn = e.target.closest('.tab-btn');
-      if(!btn) return;
-      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      const tab = btn.dataset.tab;
-      document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-      document.getElementById(tab).classList.add('active');
-    });
+    const app=initializeApp(firebaseConfig);
+    const auth=getAuth(app);
+    const db=getFirestore(app);
 
-    async function login(username, password){
+    window.auth=auth;
+    window.db=db;
+
+    // Login
+    document.getElementById('login-form').addEventListener('submit',async(e)=>{
+      e.preventDefault();
+      const email=document.getElementById('email').value;
+      const password=document.getElementById('password').value;
+      const errorEl=document.getElementById('login-error');
       try{
-        const res = await fetch('/api/auth/login',{
-          method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({ username, password })
-        });
-        if(!res.ok){ throw new Error('Credenciais inválidas'); }
-        const data = await res.json().catch(()=>({}));
-        return { ok:true, data };
+        await signInWithEmailAndPassword(auth,email,password);
       }catch(err){
-        return { ok:false, error: err.message || 'Falha ao autenticar' };
-      }
-    }
-
-    const loginForm = document.getElementById('loginForm');
-    const loginError = document.getElementById('loginError');
-    loginForm.addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      loginError.classList.add('hidden');
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value;
-      const result = await login(username, password);
-      if(result.ok){
-        document.getElementById('loginScreen').style.display='none';
-        document.getElementById('appHeader').style.display='block';
-        document.getElementById('appMain').style.display='block';
-        document.getElementById('appFooter').style.display='block';
-        sessionStorage.setItem('auth','1');
-      }else{
-        loginError.textContent = 'Usuário ou senha inválidos.';
-        loginError.classList.remove('hidden');
+        errorEl.textContent='Credenciais inválidas';
       }
     });
 
-    if(sessionStorage.getItem('auth')==='1'){
-      document.getElementById('loginScreen').style.display='none';
-      document.getElementById('appHeader').style.display='block';
-      document.getElementById('appMain').style.display='block';
-      document.getElementById('appFooter').style.display='block';
-    }
+    // Logout
+    document.getElementById('logout-btn').addEventListener('click',()=>signOut(auth));
 
-    const pacienteForm = document.getElementById('pacienteForm');
-    const pacientesTableBody = document.querySelector('#pacientesTable tbody');
-    let pacientes = JSON.parse(localStorage.getItem('pacientes')||'[]');
+    // Auth State
+    onAuthStateChanged(auth,async(user)=>{
+      if(user){
+        document.getElementById('login-screen').style.display='none';
+        document.getElementById('app').style.display='block';
+        if(typeof window.loadApp==='function')window.loadApp();
+      }else{
+        document.getElementById('login-screen').style.display='grid';
+        document.getElementById('app').style.display='none';
+      }
+    });
+  </script>
 
-    function renderPacientes(){
-      pacientesTableBody.innerHTML = pacientes.map(p=>`<tr><td>${p.nome}</td><td>${p.cpf||''}</td><td>${p.nascimento||''}</td><td>${p.telefone||''}</td><td>${p.email||''}</td></tr>`).join('');
-      document.getElementById('metricPacientes').textContent = pacientes.length;
-    }
-
-    renderPacientes();
-
-    pacienteForm.addEventListener('submit',(e)=>{
-      e.preventDefault();
-      const novo = {
-        nome: document.getElementById('nome').value.trim(),
-        cpf: document.getElementById('cpf').value.trim(),
-        nascimento: document.getElementById('nascimento').value,
-        telefone: document.getElementById('telefone').value.trim(),
-        email: document.getElementById('email').value.trim(),
-        observacoes: document.getElementById('observacoes').value.trim()
-      };
-      if(!novo.nome){ return; }
-      pacientes.push(novo
+  <!-- App Logic -->
+  <script src="/js/script.js"></script>
+</body>
+</html>
