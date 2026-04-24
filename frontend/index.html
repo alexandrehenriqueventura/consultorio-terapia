@@ -3,172 +3,427 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Consultório L'amour Psique - Firebase</title>
+  <title>Consultório L'amour Psique</title>
+  <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/2.0.0/modern-normalize.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <style>
-    :root{--bg:#f7f2a;}--panel:#111827;--muted:#94a3b8;--text:#e5e7eb;--primary:#2c55e;--primary-600:#16a34a;--ring:#334155;--card:#0b1220;--danger:#ef4444;--warning:#f59e0b;--ok:#2c55e}
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;background:linear-gradient(180deg,#0b1220 0%,#0f172a 100%);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Arial,"Noto Sans";a{color:inherit;text-decoration:none}}
-    .container{max-width:1100px;margin:0 auto;padding:0 16px}
-    .header{position:sticky;top:0;z-index:20;background:rgba(2,6,23,.6);backdrop-filter:saturate(1.2)blur(6px);border-bottom:1px solid var(--ring)}
-    .header-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
-    .logo{display:flex;align-items:center;gap:10px}
-    .logo i{color:var(--primary)}
-    .nav-menu{display:flex;gap:8px;flex-wrap:wrap}
-    .tab-btn{appearance:none;border:1px solid var(--ring);background:#0b1323;color:var(--text);padding:10px 12px;border-radius:10px;display:flex;align-items:center;gap:8px;cursor:pointer;transition:.2s ease}
-    .tab-btn:hover{border-color:var(--primary);box-shadow:0 0 2px rgba(34,197,94,.15)inset}
-    .tab-btn.active{background:linear-gradient(180deg,#0bfa30,#0b1323);border-color:var(--primary);color:#ecfeff}
-    main{padding:24px 0}
-    .grid{display:grid;gap:16px}
-    .cards{grid-template-columns:repeat(12,1fr)}
-    .card{grid-column:span 12;background:linear-gradient(180deg,#0bfa30,#0e1527);border:1px solid var(--ring);border-radius:14px;padding:16px}
-    .card h3{margin:4px 0 8px;font-size:14px;color:var(--muted);font-weight:600}
-    .metric{font-size:28px;font-weight:700}
-    .card .icon{width:40px;height:40px;display:grid;place-items:center;border-radius:10px;background:rgba(34,197,94,.08);color:var(--primary)}
-    @keyframes fade{from{opacity:.6;transform:translateY(4px)}to{opacity:1;transform:none}}
-    #login-screen{display:grid;place-items:center;min-height:100vh;padding:20px}
-    .login-box{background:var(--card);border:1px solid var(--ring);border-radius:14px;padding:32px 24px;max-width:380px;width:100%;animation:fade .6s ease}
-    .login-box h2{margin:0 0 24px;font-size:24px}
-    .form-group{margin-bottom:16px}
-    .form-group label{display:block;margin-bottom:6px;font-size:13px;color:var(--muted)}
-    .form-group input{width:100%;padding:10px 12px;background:#020617;border:1px solid var(--ring);color:#fff;border-radius:8px;font-size:14px}
-    .form-group input:focus{outline:none;border-color:var(--primary)}
-    .btn-primary{width:100%;padding:12px;background:var(--primary);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:14px}
-    .btn-primary:hover{background:var(--primary-600)}
-    .error-msg{color:var(--danger);font-size:13px;margin-top:8px}
-    #app{display:none}
+    :root {
+      --bg: #0b1220;
+      --panel: #111827;
+      --muted: #94a3b8;
+      --text: #e5e7eb;
+      --primary: #22c55e;
+      --primary-dark: #16a34a;
+      --ring: #334155;
+      --card: #0e1527;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --ok: #22c55e;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      background: linear-gradient(180deg, #0b1220 0%, #0f172a 100%);
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+      font-size: 15px;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* LAYOUT */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+    .header {
+      position: sticky; top: 0; z-index: 20;
+      background: rgba(2,6,23,.7);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--ring);
+    }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; gap: 12px; flex-wrap: wrap; }
+    .logo { display: flex; align-items: center; gap: 10px; }
+    .logo i { color: var(--primary); font-size: 20px; }
+    .logo h1 { margin: 0; font-size: 17px; }
+    .nav-menu { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tab-btn {
+      appearance: none; border: 1px solid var(--ring);
+      background: #0b1323; color: var(--text);
+      padding: 9px 14px; border-radius: 10px;
+      display: flex; align-items: center; gap: 8px;
+      cursor: pointer; transition: .2s ease; font-size: 13px;
+    }
+    .tab-btn:hover { border-color: var(--primary); }
+    .tab-btn.active {
+      background: linear-gradient(180deg, #0d2e1a, #0b1323);
+      border-color: var(--primary); color: #ecfeff;
+    }
+    main { padding: 24px 0; }
+
+    /* CARDS DASHBOARD */
+    .grid { display: grid; gap: 16px; }
+    .cards { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+    .card {
+      background: linear-gradient(180deg, #0d2e1a 0%, #0e1527 100%);
+      border: 1px solid var(--ring); border-radius: 14px; padding: 20px;
+    }
+    .card h3 { margin: 6px 0 8px; font-size: 13px; color: var(--muted); font-weight: 600; }
+    .metric { font-size: 28px; font-weight: 700; color: #fff; }
+    .card .icon {
+      width: 40px; height: 40px; display: grid; place-items: center;
+      border-radius: 10px; background: rgba(34,197,94,.1); color: var(--primary);
+    }
+
+    /* LOGIN */
+    #login-screen { display: grid; place-items: center; min-height: 100vh; padding: 20px; }
+    .login-box {
+      background: var(--card); border: 1px solid var(--ring);
+      border-radius: 14px; padding: 32px 24px; max-width: 380px; width: 100%;
+      animation: fade .5s ease;
+    }
+    .login-box h2 { margin: 0 0 24px; font-size: 22px; }
+    #app { display: none; }
+
+    /* FORMULÁRIOS */
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; margin-bottom: 5px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%; padding: 10px 12px;
+      background: #020617; border: 1px solid var(--ring);
+      color: #fff; border-radius: 8px; font-size: 14px;
+      transition: border-color .2s;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { outline: none; border-color: var(--primary); }
+    .form-group textarea { resize: vertical; min-height: 72px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .btn-primary {
+      width: 100%; padding: 12px; background: var(--primary);
+      color: #000; border: none; border-radius: 8px;
+      cursor: pointer; font-weight: 700; font-size: 14px; transition: .2s;
+    }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-primary:disabled { opacity: .6; cursor: not-allowed; }
+    .btn-submit { width: 100%; padding: 12px; background: var(--primary); color: #000; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 14px; transition: .2s; }
+    .btn-submit:hover { background: var(--primary-dark); }
+    .btn-submit:disabled { opacity: .6; cursor: not-allowed; }
+    .error-msg { color: var(--danger); font-size: 13px; margin-top: 8px; }
+    .form-error { color: var(--danger); font-size: 13px; margin-top: 8px; }
+
+    /* LISTA */
+    .list-card {
+      background: var(--card); border: 1px solid var(--ring); border-radius: 12px;
+      padding: 14px 16px; margin-bottom: 10px;
+      display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    }
+    .list-card-info { display: flex; flex-direction: column; gap: 3px; }
+    .list-card-info strong { font-size: 15px; color: #fff; }
+    .list-card-info span { font-size: 13px; color: var(--muted); }
+    .list-card-info .obs { font-size: 12px; color: var(--warning); font-style: italic; }
+    .list-card-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .btn-icon {
+      width: 36px; height: 36px; border: 1px solid var(--ring);
+      background: transparent; color: var(--text);
+      border-radius: 8px; cursor: pointer; display: grid; place-items: center;
+      transition: .2s; font-size: 13px;
+    }
+    .btn-icon.btn-edit:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-icon.btn-danger:hover { border-color: var(--danger); color: var(--danger); }
+    .btn-icon.btn-ok:hover { border-color: var(--ok); color: var(--ok); }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; background: rgba(34,197,94,.1); color: var(--primary); border: 1px solid rgba(34,197,94,.2); }
+    .badge-ok { background: rgba(34,197,94,.15); color: var(--ok); border: 1px solid rgba(34,197,94,.3); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+    .empty-msg { color: var(--muted); text-align: center; padding: 48px 20px; }
+
+    /* BUSCA */
+    .search-bar { position: relative; margin-bottom: 16px; }
+    .search-bar input { padding-left: 36px; }
+    .search-bar i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 13px; }
+
+    /* PAGINAÇÃO */
+    .paginacao { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 16px; }
+    .btn-page { padding: 8px 16px; background: var(--card); border: 1px solid var(--ring); color: var(--text); border-radius: 8px; cursor: pointer; font-size: 13px; }
+    .btn-page:hover { border-color: var(--primary); }
+
+    /* MODAL */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 100;
+      background: rgba(0,0,0,.7); backdrop-filter: blur(4px);
+      align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal {
+      background: var(--panel); border: 1px solid var(--ring);
+      border-radius: 16px; padding: 28px 24px; width: 100%; max-width: 520px;
+      max-height: 90vh; overflow-y: auto; animation: fade .25s ease;
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .modal-header h3 { margin: 0; font-size: 18px; }
+    .modal-close { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 20px; line-height: 1; padding: 4px; }
+    .modal-close:hover { color: var(--text); }
+
+    /* TOAST */
+    #toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+      background: #1a3a25; border: 1px solid var(--primary); color: var(--primary);
+      padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 600;
+      z-index: 999; transition: transform .3s ease; white-space: nowrap;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+
+    @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    /* SEÇÃO HEADER */
+    .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .section-header h2 { margin: 0; font-size: 20px; }
+    .btn-add { padding: 10px 18px; background: var(--primary); color: #000; border: none; border-radius: 9px; cursor: pointer; font-weight: 700; font-size: 13px; display: flex; align-items: center; gap: 8px; transition: .2s; }
+    .btn-add:hover { background: var(--primary-dark); }
   </style>
 </head>
 <body>
-  <!-- Tela de Login -->
-  <div id="login-screen">
-    <div class="login-box">
-      <h2>⚡ Login - Firebase Auth</h2>
-      <form id="login-form">
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <h2><i class="fas fa-brain" style="color:var(--primary)"></i> L'amour Psique</h2>
+    <form id="login-form">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="email" required autocomplete="email" placeholder="seu@email.com">
+      </div>
+      <div class="form-group">
+        <label>Senha</label>
+        <input type="password" id="password" required autocomplete="current-password" placeholder="••••••••">
+      </div>
+      <button type="submit" class="btn-primary">Entrar</button>
+      <p id="login-error" class="error-msg"></p>
+    </form>
+  </div>
+</div>
+
+<!-- APP PRINCIPAL -->
+<div id="app">
+  <header class="header">
+    <div class="container">
+      <div class="header-inner">
+        <div class="logo">
+          <i class="fas fa-brain"></i>
+          <h1>Consultório L'amour Psique</h1>
+        </div>
+        <nav class="nav-menu">
+          <button class="tab-btn active" data-tab="dashboard"><i class="fas fa-chart-line"></i> Dashboard</button>
+          <button class="tab-btn" data-tab="pacientes"><i class="fas fa-users"></i> Pacientes</button>
+          <button class="tab-btn" data-tab="consultas"><i class="fas fa-calendar"></i> Consultas</button>
+          <button id="logout-btn" class="tab-btn"><i class="fas fa-sign-out-alt"></i> Sair</button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- DASHBOARD -->
+    <div id="dashboard-tab" class="tab-content">
+      <div class="grid cards" style="margin-bottom:8px">
+        <div class="card">
+          <div class="icon"><i class="fas fa-users"></i></div>
+          <h3>Total de Pacientes</h3>
+          <div class="metric" id="total-pacientes">0</div>
+        </div>
+        <div class="card">
+          <div class="icon"><i class="fas fa-calendar-check"></i></div>
+          <h3>Consultas Este Mês</h3>
+          <div class="metric" id="total-consultas">0</div>
+        </div>
+        <div class="card">
+          <div class="icon"><i class="fas fa-clock"></i></div>
+          <h3>Receita Pendente</h3>
+          <div class="metric" id="receita-pendente" style="color:var(--warning)">R$ 0,00</div>
+        </div>
+        <div class="card">
+          <div class="icon"><i class="fas fa-check-circle"></i></div>
+          <h3>Pagamentos Recebidos</h3>
+          <div class="metric" id="pagos" style="color:var(--ok)">R$ 0,00</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PACIENTES -->
+    <div id="pacientes-tab" class="tab-content" style="display:none">
+      <div class="section-header">
+        <h2>Pacientes</h2>
+        <button id="add-paciente-btn" class="btn-add"><i class="fas fa-plus"></i> Novo Paciente</button>
+      </div>
+      <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" id="busca-paciente" placeholder="Buscar por nome ou email...">
+      </div>
+      <div id="pacientes-list"></div>
+    </div>
+
+    <!-- CONSULTAS -->
+    <div id="consultas-tab" class="tab-content" style="display:none">
+      <div class="section-header">
+        <h2>Consultas</h2>
+        <button id="add-consulta-btn" class="btn-add"><i class="fas fa-plus"></i> Nova Consulta</button>
+      </div>
+      <div id="consultas-list"></div>
+    </div>
+  </main>
+</div>
+
+<!-- MODAL: PACIENTE -->
+<div id="modal-paciente" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-paciente-titulo">Novo Paciente</h3>
+      <button class="modal-close" aria-label="Fechar">&times;</button>
+    </div>
+    <form id="form-paciente">
+      <div class="form-row">
+        <div class="form-group" style="grid-column:span 2">
+          <label>Nome completo *</label>
+          <input type="text" id="p-nome" placeholder="Nome do paciente" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>CPF</label>
+          <input type="text" id="p-cpf" placeholder="000.000.000-00" maxlength="14">
+        </div>
+        <div class="form-group">
+          <label>Data de nascimento</label>
+          <input type="date" id="p-nascimento">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Telefone</label>
+          <input type="tel" id="p-telefone" placeholder="(00) 00000-0000">
+        </div>
         <div class="form-group">
           <label>Email</label>
-          <input type="email" id="email" required autocomplete="email">
+          <input type="email" id="p-email" placeholder="paciente@email.com">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Profissão</label>
+          <input type="text" id="p-profissao" placeholder="Ex: Professor">
         </div>
         <div class="form-group">
-          <label>Senha</label>
-          <input type="password" id="password" required autocomplete="current-password">
+          <label>Contato de emergência</label>
+          <input type="text" id="p-emergencia" placeholder="Nome e telefone">
         </div>
-        <button type="submit" class="btn-primary">Entrar</button>
-        <p id="login-error" class="error-msg"></p>
-      </form>
+      </div>
+      <button type="submit" class="btn-submit">Salvar</button>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL: CONSULTA -->
+<div id="modal-consulta" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-consulta-titulo">Nova Consulta</h3>
+      <button class="modal-close" aria-label="Fechar">&times;</button>
+    </div>
+    <form id="form-consulta">
+      <div class="form-group">
+        <label>Paciente *</label>
+        <select id="c-paciente" required>
+          <option value="">Selecione o paciente...</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Data e hora *</label>
+          <input type="datetime-local" id="c-data" required>
+        </div>
+        <div class="form-group">
+          <label>Valor (R$)</label>
+          <input type="number" id="c-valor" min="0" step="0.01" placeholder="0,00">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Observações</label>
+        <textarea id="c-observacoes" placeholder="Anotações sobre a consulta..."></textarea>
+      </div>
+      <button type="submit" class="btn-submit">Salvar</button>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL: CONFIRMAR EXCLUSÃO -->
+<div id="modal-confirmar" class="modal-overlay">
+  <div class="modal" style="max-width:380px;text-align:center">
+    <div style="font-size:40px;margin-bottom:12px">⚠️</div>
+    <p id="confirmar-msg" style="margin:0 0 24px;color:var(--text);font-size:15px"></p>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button id="confirmar-nao" class="tab-btn" style="padding:10px 24px">Cancelar</button>
+      <button id="confirmar-sim" style="padding:10px 24px;background:var(--danger);color:#fff;border:none;border-radius:9px;cursor:pointer;font-weight:700">Excluir</button>
     </div>
   </div>
+</div>
 
-  <!-- App Principal (oculto até login) -->
-  <div id="app">
-    <header class="header">
-      <div class="container">
-        <div class="header-inner">
-          <div class="logo">
-            <i class="fas fa-brain"></i>
-            <h1 style="margin:0;font-size:18px">Consultório L'amour Psique</h1>
-          </div>
-          <nav class="nav-menu">
-            <button class="tab-btn active" data-tab="dashboard"><i class="fas fa-chart-line"></i>Dashboard</button>
-            <button class="tab-btn" data-tab="pacientes"><i class="fas fa-users"></i>Pacientes</button>
-            <button class="tab-btn" data-tab="consultas"><i class="fas fa-calendar"></i>Consultas</button>
-            <button id="logout-btn" class="tab-btn"><i class="fas fa-sign-out-alt"></i>Sair</button>
-          </nav>
-        </div>
-      </div>
-    </header>
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js';
+  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
+  import { getFirestore } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js';
 
-    <main class="container">
-      <!-- Dashboard -->
-      <div id="dashboard-tab" class="tab-content">
-        <div class="grid cards">
-          <div class="card" style="grid-column:span 3">
-            <div class="icon"><i class="fas fa-users"></i></div>
-            <h3>Total de Pacientes</h3>
-            <div class="metric" id="total-pacientes">0</div>
-          </div>
-          <div class="card" style="grid-column:span 3">
-            <div class="icon"><i class="fas fa-calendar-check"></i></div>
-            <h3>Consultas Este Mês</h3>
-            <div class="metric" id="total-consultas">0</div>
-          </div>
-          <div class="card" style="grid-column:span 3">
-            <div class="icon"><i class="fas fa-dollar-sign"></i></div>
-            <h3>Receita Pendente</h3>
-            <div class="metric" id="receita-pendente">R$ 0,00</div>
-          </div>
-          <div class="card" style="grid-column:span 3">
-            <div class="icon"><i class="fas fa-check-circle"></i></div>
-            <h3>Pagamentos Recebidos</h3>
-            <div class="metric" id="pagos">R$ 0,00</div>
-          </div>
-        </div>
-      </div>
+  // ATENÇÃO: mova firebaseConfig para variáveis de ambiente em produção
+  // ou use Firebase Hosting com __firebase_config__
+  const firebaseConfig = {
+    apiKey: "AIzaSyAKmzWCQVr1WkUEfItaimjwkRoW18-Kc5M",
+    authDomain: "consultorio-terapia.firebaseapp.com",
+    projectId: "consultorio-terapia",
+    storageBucket: "consultorio-terapia.firebasestorage.app",
+    messagingSenderId: "592781807631",
+    appId: "1:592781807631:web:38dab438e6bebbf854537a"
+  };
 
-      <!-- Pacientes -->
-      <div id="pacientes-tab" class="tab-content" style="display:none">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-          <h2 style="margin:0">Gerenciar Pacientes</h2>
-          <button id="add-paciente-btn" class="btn-primary" style="width:auto;padding:10px 20px"><i class="fas fa-plus"></i> Novo Paciente</button>
-        </div>
-        <div id="pacientes-list"></div>
-      </div>
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-      <!-- Consultas -->
-      <div id="consultas-tab" class="tab-content" style="display:none">
-        <h2>Consultas Agendadas</h2>
-        <div id="consultas-list"></div>
-      </div>
-    </main>
-  </div>
+  window.auth = auth;
+  window.db = db;
 
-  <!-- Firebase SDK -->
-  <script type="module">
-    import{initializeApp}from'https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js';
-    import{getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut}from'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
-    import{getFirestore}from'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js';
+  document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const errorEl = document.getElementById('login-error');
+    const btn = e.target.querySelector('button[type=submit]');
+    btn.disabled = true;
+    btn.textContent = 'Entrando...';
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (err) {
+      errorEl.textContent = 'Email ou senha inválidos.';
+      btn.disabled = false;
+      btn.textContent = 'Entrar';
+    }
+  });
 
-    const firebaseConfig={apiKey:"AIzaSyAKmzWCQVr1WkUEfItaimjwkRoW18-Kc5M",authDomain:"consultorio-terapia.firebaseapp.com",projectId:"consultorio-terapia",storageBucket:"consultorio-terapia.firebasestorage.app",messagingSenderId:"592781807631",appId:"1:592781807631:web:38dab438e6bebbf854537a"};
+  document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
 
-    const app=initializeApp(firebaseConfig);
-    const auth=getAuth(app);
-    const db=getFirestore(app);
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      if (typeof window.loadApp === 'function') window.loadApp();
+    } else {
+      document.getElementById('login-screen').style.display = 'grid';
+      document.getElementById('app').style.display = 'none';
+    }
+  });
+</script>
 
-    window.auth=auth;
-    window.db=db;
+<!-- App Logic -->
+<script type="module" src="/js/script.js"></script>
 
-    // Login
-    document.getElementById('login-form').addEventListener('submit',async(e)=>{
-      e.preventDefault();
-      const email=document.getElementById('email').value;
-      const password=document.getElementById('password').value;
-      const errorEl=document.getElementById('login-error');
-      try{
-        await signInWithEmailAndPassword(auth,email,password);
-      }catch(err){
-        errorEl.textContent='Credenciais inválidas';
-      }
-    });
-
-    // Logout
-    document.getElementById('logout-btn').addEventListener('click',()=>signOut(auth));
-
-    // Auth State
-    onAuthStateChanged(auth,async(user)=>{
-      if(user){
-        document.getElementById('login-screen').style.display='none';
-        document.getElementById('app').style.display='block';
-        if(typeof window.loadApp==='function')window.loadApp();
-      }else{
-        document.getElementById('login-screen').style.display='grid';
-        document.getElementById('app').style.display='none';
-      }
-    });
-  </script>
-
-  <!-- App Logic -->
-  <script src="/js/script.js"></script>
 </body>
 </html>
