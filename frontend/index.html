@@ -7,6 +7,8 @@
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/2.0.0/modern-normalize.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <!-- FIX: env-config.js injetado pelo CI antes do deploy -->
+  <script src="/env-config.js"></script>
   <style>
     :root {
       --bg: #0b1220;
@@ -70,6 +72,18 @@
     .card .icon {
       width: 40px; height: 40px; display: grid; place-items: center;
       border-radius: 10px; background: rgba(34,197,94,.1); color: var(--primary);
+    }
+
+    /* FIX: Skeleton loader para o dashboard */
+    @keyframes shimmer {
+      0%   { background-position: -400% 0; }
+      100% { background-position:  400% 0; }
+    }
+    .skeleton-metric {
+      height: 36px; width: 80px; border-radius: 6px;
+      background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+      background-size: 400% 100%;
+      animation: shimmer 1.5s ease-in-out infinite;
     }
 
     /* LOGIN */
@@ -225,26 +239,27 @@
   <main class="container">
     <!-- DASHBOARD -->
     <div id="dashboard-tab" class="tab-content">
+      <!-- FIX: skeleton loaders enquanto os dados carregam -->
       <div class="grid cards" style="margin-bottom:8px">
         <div class="card">
           <div class="icon"><i class="fas fa-users"></i></div>
           <h3>Total de Pacientes</h3>
-          <div class="metric" id="total-pacientes">0</div>
+          <div class="metric" id="total-pacientes"><div class="skeleton-metric"></div></div>
         </div>
         <div class="card">
           <div class="icon"><i class="fas fa-calendar-check"></i></div>
           <h3>Consultas Este Mês</h3>
-          <div class="metric" id="total-consultas">0</div>
+          <div class="metric" id="total-consultas"><div class="skeleton-metric"></div></div>
         </div>
         <div class="card">
           <div class="icon"><i class="fas fa-clock"></i></div>
           <h3>Receita Pendente</h3>
-          <div class="metric" id="receita-pendente" style="color:var(--warning)">R$ 0,00</div>
+          <div class="metric" id="receita-pendente" style="color:var(--warning)"><div class="skeleton-metric"></div></div>
         </div>
         <div class="card">
           <div class="icon"><i class="fas fa-check-circle"></i></div>
           <h3>Pagamentos Recebidos</h3>
-          <div class="metric" id="pagos" style="color:var(--ok)">R$ 0,00</div>
+          <div class="metric" id="pagos" style="color:var(--ok)"><div class="skeleton-metric"></div></div>
         </div>
       </div>
     </div>
@@ -367,20 +382,25 @@
   </div>
 </div>
 
-<!-- Firebase SDK + App Logic (import dinâmico garante ordem correta) -->
+<!-- Firebase SDK + App Logic -->
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js';
   import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
   import { getFirestore } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js';
 
+  // FIX: config lida de window.__ENV (injetado por env-config.js via CI)
   const firebaseConfig = {
-    apiKey: "AIzaSyAKmzWCQVr1WkUEfItaimjwkRoW18-Kc5M",
-    authDomain: "consultorio-terapia.firebaseapp.com",
-    projectId: "consultorio-terapia",
-    storageBucket: "consultorio-terapia.firebasestorage.app",
-    messagingSenderId: "592781807631",
-    appId: "1:592781807631:web:38dab438e6bebbf854537a"
+    apiKey:            window.__ENV?.FIREBASE_API_KEY            || '',
+    authDomain:        window.__ENV?.FIREBASE_AUTH_DOMAIN        || '',
+    projectId:         window.__ENV?.FIREBASE_PROJECT_ID        || '',
+    storageBucket:     window.__ENV?.FIREBASE_STORAGE_BUCKET     || '',
+    messagingSenderId: window.__ENV?.FIREBASE_MESSAGING_SENDER_ID || '',
+    appId:             window.__ENV?.FIREBASE_APP_ID             || '',
   };
+
+  if (!firebaseConfig.apiKey) {
+    console.error('env-config.js não encontrado ou FIREBASE_API_KEY ausente.');
+  }
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -408,9 +428,8 @@
 
   document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
 
-  // Import dinâmico garante que script.js esteja totalmente carregado
-  // antes de registrar o onAuthStateChanged, evitando race condition
-  await import('/js/script.js');
+  // FIX: import com path relativo para funcionar em qualquer ambiente
+  await import('./js/script.js');
 
   onAuthStateChanged(auth, async (user) => {
     if (user) {
