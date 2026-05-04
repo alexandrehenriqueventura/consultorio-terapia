@@ -1,0 +1,31 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Função auxiliar: verifica se usuário é admin
+    function isAdmin() {
+      return request.auth != null
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Apenas admins autenticados têm acesso total
+    match /pacientes/{id} {
+      allow read, write: if isAdmin();
+    }
+
+    match /consultas/{id} {
+      allow read, write: if isAdmin();
+    }
+
+    // Usuário pode ler apenas seu próprio perfil
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if false; // Apenas via Admin SDK
+    }
+
+    // Negar tudo mais por padrão
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
