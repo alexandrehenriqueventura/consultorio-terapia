@@ -1,5 +1,12 @@
 {
   "projects": {
     "default": "consultorio-terapia"
+  },
+  "targets": {
+    "consultorio-terapia": {
+      "hosting": {
+        "site": ["contultoria-terapia"]
+      }
+    }
   }
 }

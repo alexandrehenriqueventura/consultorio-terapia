@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "site": "consultorio-terapia",
+    "site": "contultoria-terapia",
     "public": "frontend",
     "ignore": [
       "firebase.json",
