@@ -367,14 +367,12 @@
   </div>
 </div>
 
-<!-- Firebase SDK -->
+<!-- Firebase SDK + App Logic (import dinâmico garante ordem correta) -->
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js';
   import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
   import { getFirestore } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js';
 
-  // ATENÇÃO: mova firebaseConfig para variáveis de ambiente em produção
-  // ou use Firebase Hosting com __firebase_config__
   const firebaseConfig = {
     apiKey: "AIzaSyAKmzWCQVr1WkUEfItaimjwkRoW18-Kc5M",
     authDomain: "consultorio-terapia.firebaseapp.com",
@@ -410,6 +408,10 @@
 
   document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
 
+  // Import dinâmico garante que script.js esteja totalmente carregado
+  // antes de registrar o onAuthStateChanged, evitando race condition
+  await import('/js/script.js');
+
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       document.getElementById('login-screen').style.display = 'none';
@@ -421,9 +423,6 @@
     }
   });
 </script>
-
-<!-- App Logic -->
-<script type="module" src="/js/script.js"></script>
 
 </body>
 </html>
