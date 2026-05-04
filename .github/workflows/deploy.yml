@@ -4,6 +4,9 @@ on:
   push:
     branches: [main]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -11,6 +14,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
       - name: Verificar secrets obrigatórios
         run: |
@@ -21,6 +29,7 @@ jobs:
           [ -z "$FIREBASE_STORAGE_BUCKET" ]      && MISSING="$MISSING FIREBASE_STORAGE_BUCKET"
           [ -z "$FIREBASE_MESSAGING_SENDER_ID" ] && MISSING="$MISSING FIREBASE_MESSAGING_SENDER_ID"
           [ -z "$FIREBASE_APP_ID" ]              && MISSING="$MISSING FIREBASE_APP_ID"
+          [ -z "$FIREBASE_SERVICE_ACCOUNT" ]     && MISSING="$MISSING FIREBASE_SERVICE_ACCOUNT"
           if [ -n "$MISSING" ]; then
             echo "❌ Secrets ausentes:$MISSING"
             exit 1
@@ -33,8 +42,9 @@ jobs:
           FIREBASE_STORAGE_BUCKET:      ${{ secrets.FIREBASE_STORAGE_BUCKET }}
           FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}
           FIREBASE_APP_ID:              ${{ secrets.FIREBASE_APP_ID }}
+          FIREBASE_SERVICE_ACCOUNT:     ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
 
-      - name: Gerar env-config.js (sem Node/npm)
+      - name: Gerar env-config.js
         run: |
           cat > frontend/env-config.js << 'ENVEOF'
           window.__ENV = {
@@ -52,8 +62,7 @@ jobs:
           sed -i "s|__STORAGE_BUCKET__|$FIREBASE_STORAGE_BUCKET|g"           frontend/env-config.js
           sed -i "s|__MESSAGING_SENDER_ID__|$FIREBASE_MESSAGING_SENDER_ID|g" frontend/env-config.js
           sed -i "s|__APP_ID__|$FIREBASE_APP_ID|g"                           frontend/env-config.js
-          echo "✅ env-config.js gerado:"
-          cat frontend/env-config.js
+          echo "✅ env-config.js gerado"
         env:
           FIREBASE_API_KEY:             ${{ secrets.FIREBASE_API_KEY }}
           FIREBASE_AUTH_DOMAIN:         ${{ secrets.FIREBASE_AUTH_DOMAIN }}
@@ -62,10 +71,17 @@ jobs:
           FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}
           FIREBASE_APP_ID:              ${{ secrets.FIREBASE_APP_ID }}
 
-      - name: Deploy Firebase Hosting
-        uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          channelId: live
-          projectId: consultorio-terapia
+      - name: Instalar Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Salvar credencial de serviço
+        run: |
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > ${{ github.workspace }}/service-account.json
+
+      - name: Deploy no Firebase Hosting
+        run: |
+          firebase deploy --only hosting \
+            --project consultorio-terapia \
+            --non-interactive
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/service-account.json
