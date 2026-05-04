@@ -58,7 +58,8 @@ O deploy é feito **automaticamente** via GitHub Actions sempre que há push na 
 
 O workflow realiza:
 1. Checkout do repositório
-2. Deploy do diretório `frontend/` para o **Firebase Hosting**
+2. Injeção das variáveis de ambiente Firebase via secrets
+3. Deploy do diretório `frontend/` para o **Firebase Hosting** autenticado via `FIREBASE_TOKEN`
 
 > O projeto está disponível em: `https://consultorio-terapia.web.app`
 
@@ -81,12 +82,14 @@ python -m http.server 8080
 
 ## 🔑 Configuração do Firebase
 
-As credenciais do Firebase estão declaradas em `frontend/index.html`. Para um ambiente de produção próprio:
+As credenciais do Firebase são injetadas automaticamente via GitHub Actions Secrets. Para um ambiente de produção próprio:
 
 1. Crie um projeto no [Firebase Console](https://console.firebase.google.com)
 2. Ative **Authentication** (método: Email/Senha) e **Firestore**
-3. Substitua o objeto `firebaseConfig` no `index.html` pelas suas credenciais
-4. Configure o secret `FIREBASE_TOKEN` no repositório GitHub para o deploy automático funcionar
+3. Configure os secrets no repositório GitHub:
+   - `FIREBASE_API_KEY`, `FIREBASE_AUTH_DOMAIN`, `FIREBASE_PROJECT_ID`
+   - `FIREBASE_STORAGE_BUCKET`, `FIREBASE_MESSAGING_SENDER_ID`, `FIREBASE_APP_ID`
+   - `FIREBASE_TOKEN` — gerado via `firebase login:ci`
 
 ## 📁 Estrutura do Projeto
 
