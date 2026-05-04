@@ -1,11 +1,10 @@
-const CACHE = 'consultorio-v1';
+const CACHE = 'consultorio-v2';
 const ASSETS = [
   '/',
   '/index.html',
-  '/css/style.css',
   '/js/script.js',
   '/manifest.json',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css'
 ];
 
 self.addEventListener('install', (e) => {
