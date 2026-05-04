@@ -81,7 +81,7 @@ jobs:
       - name: Deploy no Firebase Hosting
         run: |
           firebase deploy --only hosting \
-            --project contultoria-terapia \
+            --project consultorio-terapia \
             --non-interactive
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/service-account.json
