@@ -4,9 +4,6 @@ on:
   push:
     branches: [main]
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -14,11 +11,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
 
       - name: Verificar secrets obrigatórios
         run: |
@@ -76,7 +68,14 @@ jobs:
 
       - name: Salvar credencial de serviço
         run: |
-          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > ${{ github.workspace }}/service-account.json
+          echo "$FIREBASE_SERVICE_ACCOUNT" > ${{ github.workspace }}/service-account.json
+          echo "✅ service-account.json criado ($(wc -c < ${{ github.workspace }}/service-account.json) bytes)"
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      - name: Validar JSON da credencial
+        run: |
+          python3 -c "import json,sys; json.load(open('${{ github.workspace }}/service-account.json')); print('✅ JSON válido')"
 
       - name: Deploy no Firebase Hosting
         run: |
