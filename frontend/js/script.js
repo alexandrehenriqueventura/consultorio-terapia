@@ -17,6 +17,7 @@ const State = {
   consultas: [],
   editingPacienteId: null,
   editingConsultaId: null,
+  paginaAtual: 1,
 };
 
 // ============================================
@@ -61,7 +62,6 @@ function setupTabs() {
 // MODAIS
 // ============================================
 function setupModais() {
-  // Fechar modais ao clicar no overlay
   document.querySelectorAll('.modal-overlay').forEach(overlay => {
     overlay.addEventListener('click', (e) => {
       if (e.target === overlay) fecharTodosModais();
@@ -72,13 +72,11 @@ function setupModais() {
     btn.addEventListener('click', fecharTodosModais);
   });
 
-  // Form paciente
   document.getElementById('form-paciente').addEventListener('submit', async (e) => {
     e.preventDefault();
     await salvarPaciente();
   });
 
-  // Form consulta
   document.getElementById('form-consulta').addEventListener('submit', async (e) => {
     e.preventDefault();
     await salvarConsulta();
@@ -125,7 +123,6 @@ function abrirModalConsulta(consulta = null) {
   form.reset();
   State.editingConsultaId = null;
 
-  // Popular select de pacientes
   selectPaciente.innerHTML = '<option value="">Selecione o paciente...</option>' +
     State.pacientes.map(p => `<option value="${p.id}">${p.nome}</option>`).join('');
 
@@ -255,19 +252,34 @@ async function loadConsultas() {
   const snapshot = await getDocs(q);
   State.consultas = snapshot.docs.map(d => {
     const data = d.data();
-    const dataDate = data.data?.toDate ? data.data.toDate() : new Date(data.data);
+
+    // FIX: trata data nula/inválida de forma segura
+    let dataDate = null;
+    try {
+      if (data.data?.toDate) {
+        dataDate = data.data.toDate();
+      } else if (data.data) {
+        const parsed = new Date(data.data);
+        dataDate = isNaN(parsed.getTime()) ? null : parsed;
+      }
+    } catch (e) {
+      console.warn(`Consulta ${d.id} com data inválida:`, e);
+    }
+
     return {
       id: d.id,
       ...data,
       dataDate,
-      dataISO: dataDate.toISOString().slice(0, 16),
+      dataISO: dataDate ? dataDate.toISOString().slice(0, 16) : '',
     };
   });
-  renderConsultas();
+  // FIX: preserva a página atual após reload
+  renderConsultas(State.paginaAtual);
 }
 
 function renderConsultas(pagina = 1) {
   const POR_PAGINA = 15;
+  State.paginaAtual = pagina; // FIX: persiste página no estado
   const container = document.getElementById('consultas-list');
   const total = State.consultas.length;
   const inicio = (pagina - 1) * POR_PAGINA;
@@ -280,7 +292,10 @@ function renderConsultas(pagina = 1) {
 
   const html = paginas.map(c => {
     const paciente = State.pacientes.find(p => p.id === c.pacienteId) || { nome: 'Paciente desconhecido' };
-    const dataStr = c.dataDate.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+    // FIX: exibe aviso se data for inválida em vez de quebrar
+    const dataStr = c.dataDate
+      ? c.dataDate.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
+      : '<span style="color:var(--danger)">Data inválida</span>';
     return `
       <div class="list-card">
         <div class="list-card-info">
@@ -378,7 +393,9 @@ function updateDashboard() {
   document.getElementById('total-pacientes').textContent = State.pacientes.length;
 
   const consultasMes = State.consultas.filter(c => {
-    return c.dataDate.getMonth() === mes && c.dataDate.getFullYear() === ano;
+    return c.dataDate &&
+      c.dataDate.getMonth() === mes &&
+      c.dataDate.getFullYear() === ano;
   });
   document.getElementById('total-consultas').textContent = consultasMes.length;
 
@@ -420,23 +437,25 @@ function mostrarErro(formId, msg) {
   setTimeout(() => { if (erro) erro.textContent = ''; }, 4000);
 }
 
+// FIX: confirmarAcao reescrita sem memory leak de event listeners
+// Usa AbortController para remover listeners automaticamente após uso
 function confirmarAcao(mensagem) {
   return new Promise(resolve => {
     const modal = document.getElementById('modal-confirmar');
     document.getElementById('confirmar-msg').innerHTML = mensagem;
     modal.style.display = 'flex';
 
-    const btnSim = document.getElementById('confirmar-sim');
-    const btnNao = document.getElementById('confirmar-nao');
+    const controller = new AbortController();
+    const { signal } = controller;
 
     const cleanup = (result) => {
       modal.style.display = 'none';
-      btnSim.replaceWith(btnSim.cloneNode(true));
-      btnNao.replaceWith(btnNao.cloneNode(true));
+      controller.abort(); // remove todos os listeners de uma vez
       resolve(result);
     };
 
-    document.getElementById('confirmar-sim').addEventListener('click', () => cleanup(true));
-    document.getElementById('confirmar-nao').addEventListener('click', () => cleanup(false));
+    document.getElementById('confirmar-sim').addEventListener('click', () => cleanup(true), { signal });
+    document.getElementById('confirmar-nao').addEventListener('click', () => cleanup(false), { signal });
+    modal.addEventListener('click', (e) => { if (e.target === modal) cleanup(false); }, { signal });
   });
 }
