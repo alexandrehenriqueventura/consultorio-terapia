@@ -69,18 +69,14 @@ jobs:
       - name: Salvar credencial de serviço
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT" > ${{ github.workspace }}/service-account.json
-          echo "✅ service-account.json criado ($(wc -c < ${{ github.workspace }}/service-account.json) bytes)"
+          python3 -c "import json,sys; json.load(open('${{ github.workspace }}/service-account.json')); print('✅ JSON válido')"
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-
-      - name: Validar JSON da credencial
-        run: |
-          python3 -c "import json,sys; json.load(open('${{ github.workspace }}/service-account.json')); print('✅ JSON válido')"
 
       - name: Deploy no Firebase Hosting
         run: |
           firebase deploy --only hosting \
-            --project consultorio-terapia \
+            --project contultoria-terapia \
             --non-interactive
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/service-account.json
