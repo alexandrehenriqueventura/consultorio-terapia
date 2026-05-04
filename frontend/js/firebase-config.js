@@ -4,6 +4,7 @@
 // build pelo workflow deploy.yml via secrets do GitHub.
 // NÃO faça commit deste arquivo com valores reais.
 // Veja .env.example para configurar localmente.
+// Projeto: consultorio-terapia (consultorio-terapia.web.app)
 // ============================================
 
 export const firebaseConfig = {
